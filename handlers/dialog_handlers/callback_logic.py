@@ -1,13 +1,15 @@
 from aiogram.types import CallbackQuery, InputMediaPhoto
 from aiogram_dialog.widgets.kbd import Button
+from aiogram_dialog import DialogManager
+from bot_states.base_states import Menu
 
 
-async def ask_question_button(callback: CallbackQuery):
+async def ask_question_button(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     # Перенаправьте пользователя на чат для задания вопроса
     await callback.message.answer("Вы можете задать свой вопрос в нашем чате. https://t.me/RichCat_help_bot ")
 
 
-async def products_60_120(callback: CallbackQuery):
+async def products_60_120(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     photo_urls = [
         'https://basket-09.wbbasket.ru/vol1267/part126758/126758787/images/big/1.webp',
         'https://basket-13.wbbasket.ru/vol1940/part194079/194079890/images/big/1.webp',
@@ -39,10 +41,11 @@ async def products_60_120(callback: CallbackQuery):
         media_group.append(InputMediaPhoto(media=photo_url, caption="text"))
 
     # Отправка фотографий в группе в одном сообщении
-    await callback.message.answer_media_group(media=media_group)
-
-    # Отправка ссылки на товар
-    await callback.message.answer(message_text, parse_mode='HTML')
+    lol = await callback.message.answer_media_group(media=media_group)
+    if lol:
+        await dialog_manager.switch_to(state=Menu.Url_60_120)
+    # # Отправка ссылки на товар
+    # await callback.message.answer(message_text, parse_mode='HTML')
 
 
 async def products_75_150(callback: CallbackQuery):

@@ -25,8 +25,9 @@ async def main():
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 
-    dp.include_router(router_dialog)
     dp.include_router(start_dialog)
+    dp.include_router(router_dialog)
+
     setup_dialogs(dp)
 
     await botS.delete_webhook(drop_pending_updates=True)
