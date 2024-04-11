@@ -1,6 +1,7 @@
 from aiogram.types import CallbackQuery, InputMediaPhoto
 from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog import DialogManager
+from aiogram_dialog import Dialog, DialogManager, StartMode, Window, ShowMode
 from bot_states.base_states import Menu
 
 
@@ -38,17 +39,17 @@ async def products_60_120(callback: CallbackQuery, button: Button, dialog_manage
 
     media_group = []
     for photo_url in photo_urls:
-        media_group.append(InputMediaPhoto(media=photo_url, caption="text"))
+        media_group.append(InputMediaPhoto(media=photo_url))
 
     # Отправка фотографий в группе в одном сообщении
-    lol = await callback.message.answer_media_group(media=media_group)
-    if lol:
-        await dialog_manager.switch_to(state=Menu.Url_60_120)
+    await callback.message.answer_media_group(media=media_group)
+    await dialog_manager.switch_to(state=Menu.Url_60_120, show_mode=ShowMode.SEND)
+
     # # Отправка ссылки на товар
     # await callback.message.answer(message_text, parse_mode='HTML')
 
 
-async def products_75_150(callback: CallbackQuery):
+async def products_75_150(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     photo_urls = [
         'https://basket-13.wbbasket.ru/vol1940/part194079/194079892/images/big/1.webp',
         'https://basket-13.wbbasket.ru/vol1940/part194079/194079893/images/big/1.webp',
@@ -72,10 +73,8 @@ async def products_75_150(callback: CallbackQuery):
 
     media_group = []
     for photo_url in photo_urls:
-        media_group.append(InputMediaPhoto(media=photo_url, caption="text"))
+        media_group.append(InputMediaPhoto(media=photo_url))
 
     # Отправка фотографий в группе в одном сообщении
     await callback.message.answer_media_group(media=media_group)
-
-    # Отправка ссылки на товар
-    await callback.message.answer(message_text, parse_mode='HTML')
+    await dialog_manager.switch_to(state=Menu.Url_75_150)
