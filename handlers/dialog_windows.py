@@ -3,13 +3,17 @@ from aiogram.filters import CommandStart
 from aiogram.types import Message, User, ContentType
 from aiogram_dialog import Dialog, DialogManager, StartMode, Window, ShowMode
 from aiogram_dialog.widgets.kbd import Button, Row, SwitchTo, Column, Start, Url, Group, Back, Cancel
+from aiogram_dialog.widgets.input import MessageInput, TextInput
 from aiogram_dialog.widgets.text import Format, Const
-from aiogram_dialog.widgets.media import DynamicMedia
+from aiogram_dialog.widgets.media import DynamicMedia, StaticMedia
 
 
 from bot_states.base_states import Menu, PrizeDraw
-from .dialogs_getters.getters import username_getter
-from .dialog_handlers.callback_logic import ask_question_button, products_60_120, products_75_150
+from DB.db import insert_user_data
+from .dialogs_getters.getters import username_getter, object_bot
+from .dialog_handlers.callback_logic import (
+    ask_question_button, products_60_120, products_75_150,
+    process_review_screenshot, process_verification_screenshot)
 
 
 router_dialog = Router()
@@ -47,7 +51,7 @@ start_dialog = Dialog(
         Const('Вы можете задать свой вопрос в нашем чате.\nhttps://t.me/RichCat_help_bot'),
         Column(
             Back(
-                Const('◀️'),
+                Const('◀️ Назад'),
                 id='back',
             ),
         ),
@@ -68,7 +72,7 @@ start_dialog = Dialog(
         ),
         Column(
             SwitchTo(
-                Const('◀️'),
+                Const('◀️ Назад'),
                 id='back',
                 state=Menu.start
             )
@@ -76,7 +80,7 @@ start_dialog = Dialog(
         state=Menu.product_size
     ),
     Window(
-        Const('Ссылки на товар'),
+        Const('<b>Ссылки на товар</b>'),
         Row(
             Url(
                 text=Const('126758787'),
@@ -113,7 +117,7 @@ start_dialog = Dialog(
         ),
         Column(
             SwitchTo(
-                Const('◀️'),
+                Const('◀️ Назад'),
                 id='back',
                 state=Menu.start
             )
@@ -133,13 +137,13 @@ start_dialog = Dialog(
                 url=Const(
                     'https://www.wildberries.ru/catalog/194079893/detail.aspx'),
                 id='194079893'),
+        ),
+        Row(
             Url(
                 text=Const('194079891'),
                 url=Const(
                     'https://www.wildberries.ru/catalog/194079891/detail.aspx'),
                 id='194079891'),
-        ),
-        Row(
             Url(
                 text=Const('128615052'),
                 url=Const(
@@ -190,36 +194,100 @@ prize_dilog = Dialog(
                 Start(text=Const("Далее"),
                       id='first_screen',
                       state=PrizeDraw.review_screenshot),
-                Button(text=Const('Как оставить отзыв'),
-                       id='das'),
-                Start(
-                    text=Const('Задать вопрос'),
-                    id='ask_question_gift',
-                    state=PrizeDraw.help_rich_cat
-                )
+                Start(text=Const('Как оставить отзыв'),
+                      id='help_for_review',
+                      state=PrizeDraw.help_for_review),
             ),
             Column(
                 Cancel(
-                    Const('◀️'),
-                    id='cansel_prize_dilog',
+                    Const('◀️ Назад'),
+                    id='cancel_prize_dialog',
                 ),
             )
         ),
         state=PrizeDraw.prize_condition
     ),
     Window(
-        Const('Вы можете задать свой вопрос в нашем чате.\nhttps://t.me/RichCat_help_bot'),
+        Const('''Для того, чтобы оставить отзыв, Следуйте по пунктам, и у Вас все получится 🤍:
+
+1️⃣ Зайдите в Личный кабинет
+2️⃣ Найдите раздел “Покупки”
+3️⃣ Выберите товар Richcat, который Вы приобрели.
+4️⃣ Кликните на “Отзыв”, далее – “Оставить отзыв”
+5️⃣ Напишите, чем Вам понравился наш бренд
+6️⃣ Кликните “Опубликовать отзыв”
+7️⃣ Сделайте скриншот готового отзыва
+8️⃣ Сделайте скриншот нашего товара из раздела "Покупки"
+
+Сначала отправьте скриншот готового отзыва в этот чат
+
+'''),
         Column(
             Back(
-                Const('◀️'),
-                id='back',
+                Const('◀️ Назад'),
+                id='back_to_PrizeDraw',
             ),
         ),
-        state=PrizeDraw.help_rich_cat),
-
+        state=PrizeDraw.help_for_review
+    ),
+    Window(
+        Const(text='''Для того, чтобы вам присваивался порядковый Номер в Розыгрыше необходимо отправить в этот чат два скриншота из вашего кабинета.
+Сначала отправьте скриншот готового отзыва, как на примере.
+⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️'''),
+        StaticMedia(
+            url='https://lakarti.ru/image/catalog/photo_for_bot/IMG_8256.JPG',
+            type=ContentType.PHOTO
+        ),
+        MessageInput(
+            func=process_review_screenshot,
+            content_types=ContentType.PHOTO,
+        ),
+        Column(
+            Cancel(
+                Const('◀️ Назад'),
+                id='cancel_prize_dialog',
+            ),
+        ),
+        state=PrizeDraw.review_screenshot
+    ),
+    Window(
+        Const(text='''Отлично! Теперь отправьте скриншот нашего товара из раздела "Покупки", как на примере.
+⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️⬇️'''),
+        StaticMedia(
+            url='https://lakarti.ru/image/catalog/photo_for_bot/IMG_8255.JPG',
+            type=ContentType.PHOTO
+        ),
+        MessageInput(
+            func=process_verification_screenshot,
+            content_types=ContentType.PHOTO,
+        ),
+        Column(
+            Cancel(
+                Const('◀️ Назад'),
+                id='cancel_prize_dialog',
+            ),
+        ),
+        getter=object_bot,
+        state=PrizeDraw.purchase_screenshot
+    ),
+    Window(
+        Const(text='Скриншоты успешно отправлены на проверку. Ожидайте результатов.'),
+        Column(
+            Cancel(
+                Const('◀️ Вернуться на главную'),
+                id='cancel_after_screenshots',
+            ),
+        ),
+        state=PrizeDraw.finish
+    )
 )
 
 
-@ router_dialog.message(CommandStart())
+@router_dialog.message(CommandStart())
 async def command_start_process(message: Message, dialog_manager: DialogManager):
+    chat_id = message.chat.id
+    username = message.from_user.username
+    first_name = message.from_user.first_name
+    last_name = message.from_user.last_name
+    await insert_user_data(chat_id, username, first_name, last_name)
     await dialog_manager.start(state=Menu.start, mode=StartMode.RESET_STACK)

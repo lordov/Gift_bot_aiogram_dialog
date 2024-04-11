@@ -13,7 +13,7 @@ class Menu(StatesGroup):
 
 class PrizeDraw(StatesGroup):
     prize_condition = State()
-    help_rich_cat = State()
+    help_for_review = State()
     review_screenshot = State()
     purchase_screenshot = State()
-    verification = State()
+    finish = State()

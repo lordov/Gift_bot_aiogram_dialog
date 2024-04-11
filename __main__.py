@@ -9,6 +9,7 @@ from aiogram_dialog import setup_dialogs
 
 # from handlers.standart_handlers import router
 from handlers.dialog_windows import router_dialog, start_dialog, prize_dilog
+from handlers.standart_handlers import standart_router
 
 from DB.db import create_user_table
 
@@ -25,9 +26,11 @@ async def main():
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 
+    dp.include_router(standart_router)
     dp.include_router(start_dialog)
     dp.include_router(prize_dilog)
     dp.include_router(router_dialog)
+    
 
     setup_dialogs(dp)
 

@@ -48,12 +48,12 @@ async def insert_user_data(chat_id: str, username: str, first_name: str, last_na
         try:
             async with connection.cursor() as cursor:
                 await cursor.execute("""
-                    SELECT * FROM users WHERE chat_id = %s
+                    SELECT * FROM aiogram_dialog WHERE chat_id = %s
                 """, (chat_id,))
                 result = await cursor.fetchone()
                 if not result:
                     await cursor.execute("""
-                        INSERT INTO users (chat_id, username, first_name, last_name)
+                        INSERT INTO aiogram_dialog (chat_id, username, first_name, last_name)
                         VALUES (%s, %s, %s, %s)
                     """, (chat_id, username, first_name, last_name))
                     await connection.commit()
@@ -102,7 +102,7 @@ async def get_participation_value(chat_id: str):
             async with connection.cursor() as cursor:
                 await cursor.execute("""
                     SELECT participate
-                    FROM users
+                    FROM aiogram_dialog
                     WHERE chat_id = %s
                 """, (chat_id,))
                 result = await cursor.fetchone()
