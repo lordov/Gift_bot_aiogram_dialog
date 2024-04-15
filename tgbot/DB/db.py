@@ -1,7 +1,7 @@
 import aiomysql
-from utils.numbers import generate_participation_number
-from utils.config import read_config
-from utils.logger_config import logging
+from tgbot.utils.numbers import generate_participation_number
+from tgbot.utils.config import read_config
+from tgbot.utils.logger_config import logging
 
 
 config = read_config('settings.ini')

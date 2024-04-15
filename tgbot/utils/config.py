@@ -9,8 +9,7 @@ def read_config(config_file_name: str = 'settings.ini'):
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
-    config_file_path = os.path.join(os.path.dirname(
-        __file__), '..', 'settings', config_file_name)
+    config_file_path = os.path.join(logs_dir, config_file_name)
 
     # Если файл не существует, создаем его с заданной структурой
     if not os.path.exists(config_file_path):

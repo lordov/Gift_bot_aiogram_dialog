@@ -8,13 +8,13 @@ from aiogram.enums import ParseMode
 from aiogram_dialog import setup_dialogs
 
 # from handlers.standart_handlers import router
-from handlers.dialog_windows import router_dialog, start_dialog, prize_dilog
-from handlers.standart_handlers import standart_router
+from tgbot.dialogs import start_dialog, prize_dialog
+from tgbot.handlers import router_list
 
-from DB.db import create_user_table
+from tgbot.DB.db import create_user_table
 
-from utils.config import read_config
-from utils.logger_config import configure_logging
+from tgbot.utils.config import read_config
+from tgbot.utils.logger_config import configure_logging
 
 
 async def main():
@@ -26,11 +26,8 @@ async def main():
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 
-    dp.include_router(standart_router)
-    dp.include_router(start_dialog)
-    dp.include_router(prize_dilog)
-    dp.include_router(router_dialog)
-    
+    dp.include_routers(*router_list)
+    dp.include_routers(start_dialog, prize_dialog)
 
     setup_dialogs(dp)
 

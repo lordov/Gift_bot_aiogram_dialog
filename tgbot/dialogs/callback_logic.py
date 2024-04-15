@@ -1,12 +1,11 @@
 from aiogram.types import CallbackQuery, InputMediaPhoto, Message
 from aiogram import Bot
 from aiogram_dialog.widgets.kbd import Button
-from aiogram_dialog import DialogManager
-from aiogram_dialog import Dialog, DialogManager, StartMode, Window, ShowMode
+from aiogram_dialog import DialogManager, ShowMode
 
-from bot_states.base_states import Menu, PrizeDraw
-from kbd.keyboards import gift_yes_or_no
-from DB.db import insert_user_data, update_participation_number, get_participation_value
+from tgbot.dialogs.states import Menu, PrizeDraw
+from tgbot.kbd.keyboards import gift_yes_or_no
+from tgbot.DB.db import get_participation_value
 
 
 async def ask_question_button(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):

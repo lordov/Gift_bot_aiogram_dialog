@@ -1,6 +1,4 @@
-from aiogram import Bot, Dispatcher, Router
-from aiogram.filters import CommandStart
-from aiogram.types import Message, User, ContentType
+from aiogram.types import ContentType
 from aiogram_dialog import Dialog, DialogManager, StartMode, Window, ShowMode
 from aiogram_dialog.widgets.kbd import Button, Row, SwitchTo, Column, Start, Url, Group, Back, Cancel
 from aiogram_dialog.widgets.input import MessageInput, TextInput
@@ -8,15 +6,12 @@ from aiogram_dialog.widgets.text import Format, Const
 from aiogram_dialog.widgets.media import DynamicMedia, StaticMedia
 
 
-from bot_states.base_states import Menu, PrizeDraw
-from DB.db import insert_user_data
-from .dialogs_getters.getters import username_getter, object_bot
-from .dialog_handlers.callback_logic import (
-    ask_question_button, products_60_120, products_75_150,
+from tgbot.dialogs.states import Menu, PrizeDraw
+from tgbot.dialogs.getters import username_getter, object_bot
+from tgbot.dialogs.callback_logic import (
+    products_60_120, products_75_150,
     process_review_screenshot, process_verification_screenshot)
 
-
-router_dialog = Router()
 
 start_dialog = Dialog(
     Window(
@@ -167,7 +162,7 @@ start_dialog = Dialog(
 )
 
 
-prize_dilog = Dialog(
+prize_dialog = Dialog(
     Window
     (
         Const('''Благодарим за выбор нашего бренда. Это нас очень вдохновляет продолжать Вас радовать.
@@ -281,13 +276,3 @@ prize_dilog = Dialog(
         state=PrizeDraw.finish
     )
 )
-
-
-@router_dialog.message(CommandStart())
-async def command_start_process(message: Message, dialog_manager: DialogManager):
-    chat_id = message.chat.id
-    username = message.from_user.username
-    first_name = message.from_user.first_name
-    last_name = message.from_user.last_name
-    await insert_user_data(chat_id, username, first_name, last_name)
-    await dialog_manager.start(state=Menu.start, mode=StartMode.RESET_STACK)
