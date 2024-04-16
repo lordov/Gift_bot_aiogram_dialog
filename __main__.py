@@ -8,7 +8,8 @@ from aiogram.enums import ParseMode
 from aiogram_dialog import setup_dialogs
 
 # from handlers.standart_handlers import router
-from tgbot.dialogs import start_dialog, prize_dialog
+from tgbot.dialogs.Standart_dialog import start_dialog, prize_dialog
+from tgbot.dialogs.admin_dialog import admin_panel
 from tgbot.handlers import router_list
 
 from tgbot.DB.db import create_user_table
@@ -27,7 +28,7 @@ async def main():
     dp = Dispatcher(storage=storage)
 
     dp.include_routers(*router_list)
-    dp.include_routers(start_dialog, prize_dialog)
+    dp.include_routers(admin_panel, start_dialog, prize_dialog)
 
     setup_dialogs(dp)
 

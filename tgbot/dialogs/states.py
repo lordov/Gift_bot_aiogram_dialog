@@ -2,7 +2,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 
 class Menu(StatesGroup):
-    start = State()
+    Start = State()
     help_rich_cat = State()
     product_size = State()
     product_60_120 = State()
@@ -17,3 +17,9 @@ class PrizeDraw(StatesGroup):
     review_screenshot = State()
     purchase_screenshot = State()
     finish = State()
+
+
+class AdminPanel(StatesGroup):
+    Start = State()
+    EnterWinner = State()
+    Prize = State()

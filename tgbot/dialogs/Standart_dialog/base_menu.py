@@ -1,14 +1,14 @@
 from aiogram.types import ContentType
-from aiogram_dialog import Dialog, DialogManager, StartMode, Window, ShowMode
+from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import Button, Row, SwitchTo, Column, Start, Url, Group, Back, Cancel
-from aiogram_dialog.widgets.input import MessageInput, TextInput
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.text import Format, Const
-from aiogram_dialog.widgets.media import DynamicMedia, StaticMedia
+from aiogram_dialog.widgets.media import StaticMedia
 
 
-from tgbot.dialogs.states import Menu, PrizeDraw
+from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
 from tgbot.dialogs.getters import username_getter, object_bot
-from tgbot.dialogs.callback_logic import (
+from tgbot.dialogs.Standart_dialog.base_callback import (
     products_60_120, products_75_150,
     process_review_screenshot, process_verification_screenshot)
 
@@ -39,8 +39,16 @@ start_dialog = Dialog(
                 state=Menu.help_rich_cat
             )
         ),
+        Column(
+            Start(
+                text=Const('Админ панель'),
+                id='start_admin_pnl',
+                when='is_admin',
+                state=AdminPanel.Start
+            )
+        ),
         getter=username_getter,
-        state=Menu.start
+        state=Menu.Start
     ),
     Window(
         Const('Вы можете задать свой вопрос в нашем чате.\nhttps://t.me/RichCat_help_bot'),
@@ -69,7 +77,7 @@ start_dialog = Dialog(
             SwitchTo(
                 Const('◀️ Назад'),
                 id='back',
-                state=Menu.start
+                state=Menu.Start
             )
         ),
         state=Menu.product_size
@@ -114,7 +122,7 @@ start_dialog = Dialog(
             SwitchTo(
                 Const('◀️ Назад'),
                 id='back',
-                state=Menu.start
+                state=Menu.Start
             )
         ),
         state=Menu.Url_60_120
@@ -154,7 +162,7 @@ start_dialog = Dialog(
             SwitchTo(
                 Const('◀️'),
                 id='back',
-                state=Menu.start
+                state=Menu.Start
             )
         ),
         state=Menu.Url_75_150

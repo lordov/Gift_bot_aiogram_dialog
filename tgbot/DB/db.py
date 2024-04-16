@@ -35,7 +35,8 @@ async def create_user_table():
                         first_name VARCHAR(255) NULL,
                         last_name VARCHAR(255) NULL,
                         participate INT DEFAULT 0,
-                        number_of_part VARCHAR(255) NULL
+                        number_of_part VARCHAR(255) NULL,
+                        is_admin TINYINT DEFAULT 0 NOT NULL
                     )
                 """)
             await connection.commit()
@@ -110,3 +111,30 @@ async def get_participation_value(chat_id: str):
             db_logger.error(f"Error getting participation value: {e}")
 
         return result[0] if result else 0
+
+
+async def check_admin(chat_id: str):
+    # Получение подключения к базе данных
+    async with await async_connect_to_db() as connection:
+        async with connection.cursor() as cur:
+            cur: aiomysql.Cursor
+            # Получение информации о пользователе из базы данных
+            await cur.execute("SELECT is_admin FROM aiogram_dialog WHERE chat_id = %s", (chat_id,))
+            result = await cur.fetchone()
+
+            return True if result[0] == 1 else False
+
+
+async def check_is_winner(chat_id: str):
+    async with await async_connect_to_db() as connection:
+        try:
+            async with connection.cursor() as cursor:
+                cursor: aiomysql.Cursor
+                await cursor.execute("""
+                    SELECT chat_id FROM aiogram_dialog WHERE `chat_id` = %s AND `participate` = '1'
+                """, (chat_id,))
+                result = await cursor.fetchone()
+        except aiomysql.Error as e:
+            db_logger.error(f"Error getting participation value: {e}")
+
+        return True if result else False
