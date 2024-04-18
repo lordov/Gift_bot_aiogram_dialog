@@ -1,5 +1,6 @@
 name: "Docker Build and Push"
 
+# Указываем, что воркфлоу должен срабатывать при каждом пуше в ветку master
 on:
   push:
     branches:
@@ -30,7 +31,7 @@ jobs:
       # Шаг: Пуш Docker образа на Docker Hub
       - name: Push Docker Image
         run: docker push lordovat/testrep:mybot_latest  # Пуш образа на Docker Hub
-
+        
       # Шаг: Запуск контейнера с новым образом
       - name: Run Container
         uses: docker/run-action@v2
