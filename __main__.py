@@ -17,24 +17,25 @@ from tgbot.handlers import router_list
 from tgbot.DB.db import create_user_table
 
 from tgbot.utils.logger_config import configure_logging
+from tgbot.utils.commands import set_commands
 from tgbot.constants import BOT_TOKEN
 
 
 async def main():
-    botS = Bot(token=BOT_TOKEN, default=DefaultBotProperties(
+    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(
         parse_mode=ParseMode.HTML))
     await create_user_table()
     # Инициализация бота
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
-
+    await set_commands(bot)
     dp.include_routers(*router_list)
     dp.include_routers(admin_panel, start_dialog, prize_dialog)
 
     setup_dialogs(dp)
 
-    await botS.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(botS)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 
 # Запуск бота
