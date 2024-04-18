@@ -41,3 +41,4 @@ async def main():
 if __name__ == '__main__':
     configure_logging()
     asyncio.run(main())
+    print('тестово для automation.yml')
