@@ -3,6 +3,7 @@
 
 # No settings files
 *.ini
+*.env
 
 # No pycache
 *__pycache__

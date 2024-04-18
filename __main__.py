@@ -7,6 +7,8 @@ from aiogram.enums import ParseMode
 
 from aiogram_dialog import setup_dialogs
 
+from environs import Env
+
 # from handlers.standart_handlers import router
 from tgbot.dialogs.Standart_dialog import start_dialog, prize_dialog
 from tgbot.dialogs.admin_dialog import admin_panel
@@ -14,16 +16,15 @@ from tgbot.handlers import router_list
 
 from tgbot.DB.db import create_user_table
 
-from tgbot.utils.config import read_config
 from tgbot.utils.logger_config import configure_logging
+from tgbot.constants import BOT_TOKEN
 
 
 async def main():
-    config = read_config('settings.ini')
+    botS = Bot(token=BOT_TOKEN, default=DefaultBotProperties(
+        parse_mode=ParseMode.HTML))
     await create_user_table()
     # Инициализация бота
-    botS = Bot(token=config["Tg"]["api_bot"], default=DefaultBotProperties(
-        parse_mode=ParseMode.HTML))
     storage = MemoryStorage()
     dp = Dispatcher(storage=storage)
 

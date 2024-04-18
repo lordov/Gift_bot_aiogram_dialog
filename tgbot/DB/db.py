@@ -2,19 +2,19 @@ import aiomysql
 from tgbot.utils.numbers import generate_participation_number
 from tgbot.utils.config import read_config
 from tgbot.utils.logger_config import logging
+from tgbot.constants import DB_HOST,  DB_DATABASE, DB_PASSWORD, DB_USER
 
 
-config = read_config('settings.ini')
 db_logger = logging.getLogger('db_logger')
 
 
 async def async_connect_to_db() -> aiomysql.Connection:
     try:
         connection = await aiomysql.connect(
-            host=config['DB']['host'],
-            user=config['DB']['user'],
-            password=config['DB']['password'],
-            db=config['DB']['database'],
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            db=DB_DATABASE,
             auth_plugin="mysql_native_password",
         )
         return connection
@@ -28,6 +28,11 @@ async def create_user_table():
     async with await async_connect_to_db() as connection:
         try:
             async with connection.cursor() as cursor:
+                # Создание базы данных richcat, если она не существует
+                await cursor.execute("CREATE DATABASE IF NOT EXISTS richcat_test")
+                # Использование базы данных richcat
+                await cursor.execute("USE richcat_test")
+                # Создание таблицы aiogram_dialog
                 await cursor.execute("""
                     CREATE TABLE IF NOT EXISTS aiogram_dialog (
                         chat_id VARCHAR(255) PRIMARY KEY,

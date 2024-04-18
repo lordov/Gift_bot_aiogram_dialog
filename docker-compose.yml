@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  bot:
+    image: 'lordovat/testrep:mybot_latest' # Путь к образу из удаленного реестра
+    restart: 'unless-stopped'
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
