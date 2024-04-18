@@ -29,12 +29,12 @@ async def create_user_table():
         try:
             async with connection.cursor() as cursor:
                 # Создание базы данных richcat, если она не существует
-                await cursor.execute("CREATE DATABASE IF NOT EXISTS richcat_test")
+                await cursor.execute("CREATE DATABASE IF NOT EXISTS richcat")
                 # Использование базы данных richcat
-                await cursor.execute("USE richcat_test")
-                # Создание таблицы aiogram_dialog
+                await cursor.execute("USE richcat")
+                # Создание таблицы users
                 await cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS aiogram_dialog (
+                    CREATE TABLE IF NOT EXISTS users (
                         chat_id VARCHAR(255) PRIMARY KEY,
                         username VARCHAR(255) NULL,
                         first_name VARCHAR(255) NULL,
@@ -54,12 +54,12 @@ async def insert_user_data(chat_id: str, username: str, first_name: str, last_na
         try:
             async with connection.cursor() as cursor:
                 await cursor.execute("""
-                    SELECT * FROM aiogram_dialog WHERE chat_id = %s
+                    SELECT * FROM users WHERE chat_id = %s
                 """, (chat_id,))
                 result = await cursor.fetchone()
                 if not result:
                     await cursor.execute("""
-                        INSERT INTO aiogram_dialog (chat_id, username, first_name, last_name)
+                        INSERT INTO users (chat_id, username, first_name, last_name)
                         VALUES (%s, %s, %s, %s)
                     """, (chat_id, username, first_name, last_name))
                     await connection.commit()
@@ -108,7 +108,7 @@ async def get_participation_value(chat_id: str):
             async with connection.cursor() as cursor:
                 await cursor.execute("""
                     SELECT participate
-                    FROM aiogram_dialog
+                    FROM users
                     WHERE chat_id = %s
                 """, (chat_id,))
                 result = await cursor.fetchone()
@@ -124,7 +124,7 @@ async def check_admin(chat_id: str):
         async with connection.cursor() as cur:
             cur: aiomysql.Cursor
             # Получение информации о пользователе из базы данных
-            await cur.execute("SELECT is_admin FROM aiogram_dialog WHERE chat_id = %s", (chat_id,))
+            await cur.execute("SELECT is_admin FROM users WHERE chat_id = %s", (chat_id,))
             result = await cur.fetchone()
 
             return True if result[0] == 1 else False
@@ -136,7 +136,7 @@ async def check_is_winner(chat_id: str):
             async with connection.cursor() as cursor:
                 cursor: aiomysql.Cursor
                 await cursor.execute("""
-                    SELECT chat_id FROM aiogram_dialog WHERE `chat_id` = %s AND `participate` = '1'
+                    SELECT chat_id FROM users WHERE `chat_id` = %s AND `participate` = '1'
                 """, (chat_id,))
                 result = await cursor.fetchone()
         except aiomysql.Error as e:
