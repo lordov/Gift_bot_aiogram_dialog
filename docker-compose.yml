@@ -10,3 +10,13 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
       - ADMIN=${ADMIN}
+    depends_on:
+      - redis
+    links:
+      - redis
+
+  redis:
+    image: 'redis:latest'
+    restart: 'unless-stopped'
+    ports:
+      - "6379:6379"
