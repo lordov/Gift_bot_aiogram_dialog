@@ -10,6 +10,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
       - ADMIN=${ADMIN}
+      
     depends_on:
       - redis
     links:
@@ -20,3 +21,17 @@ services:
     restart: 'unless-stopped'
     ports:
       - "6379:6379"
+  
+  rabbitmq:
+    image: 'rabbitmq:management'
+    hostname: 'rabbitmq'
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - ./rabbitmq_data:/var/lib/rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=1111
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 1431655766
