@@ -4,8 +4,11 @@
 # No settings files
 *.ini
 *.env
+*.conf
+*nui
 
 # No pycache
 *__pycache__
 
 *rabbitmq_data
+*queues

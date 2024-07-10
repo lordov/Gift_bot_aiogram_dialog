@@ -6,10 +6,10 @@ from aiogram.fsm.context import FSMContext
 from aiogram.exceptions import TelegramBadRequest
 
 
-from tgbot.DB.db import insert_user_data, check_admin, update_participation_number
+from tgbot.DB.orm_query import insert_user_data, check_admin, update_participation_number
 from tgbot.dialogs.states import Menu, AdminPanel
 from tgbot.utils.logger_config import logging
-from tgbot.constants import ADMIN
+from tgbot.config import ADMIN
 
 
 start_router = Router()

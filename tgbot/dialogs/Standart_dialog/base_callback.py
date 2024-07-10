@@ -5,8 +5,8 @@ from aiogram_dialog import DialogManager, ShowMode
 
 from tgbot.dialogs.states import Menu, PrizeDraw
 from tgbot.kbd.keyboards import gift_yes_or_no
-from tgbot.DB.db import get_participation_value
-from tgbot.constants import ADMIN
+from tgbot.DB.orm_query import get_participation_value
+from tgbot.config import ADMIN
 
 
 async def ask_question_button(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):

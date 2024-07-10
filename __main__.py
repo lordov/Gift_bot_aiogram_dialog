@@ -12,15 +12,16 @@ from redis.exceptions import ConnectionError
 from aiogram_dialog import setup_dialogs
 
 # from handlers.standart_handlers import router
+from tgbot.DB.database import create_db
 from tgbot.dialogs.Standart_dialog import start_dialog, prize_dialog
 from tgbot.dialogs.admin_dialog import admin_panel
 from tgbot.handlers import router_list
 
-from tgbot.DB.db import create_user_table
+from tgbot.DB.orm_query import create_user_table
 
 from tgbot.utils.logger_config import configure_logging
 from tgbot.utils.commands import set_commands
-from tgbot.constants import BOT_TOKEN
+from tgbot.config import BOT_TOKEN
 
 
 async def setup_dispatcher():
@@ -72,7 +73,7 @@ async def main():
     dp = await setup_dispatcher()
     bot = await setup_bot(dp)
 
-    await create_user_table()
+    await create_db()
     await set_commands(bot)
 
     await bot.delete_webhook(drop_pending_updates=True)

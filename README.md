@@ -28,3 +28,45 @@
 
 Размещаю этот материал для новичков+ т.к материалов для русскоязычного коммьюнити не много. Тут не много информации, но что-нибудь может будет полезным.
 Не стесняйтесь вносить свой вклад или использовать этот проект в качестве учебного ресурса для изучения!
+
+```
+Gift_bot_aiogram_dialog
+├─ .dockerignore
+├─ docker-compose.yml
+├─ Dockerfile
+├─ Logs
+├─ nats_data
+├─ README.md
+├─ requirements.txt
+└─ tgbot
+   ├─ constants.py
+   ├─ DB
+   │  ├─ db.py
+   │  └─ __init__.py
+   ├─ dialogs
+   │  ├─ admin_dialog
+   │  │  ├─ admin_callback.py
+   │  │  ├─ admin_panel.py
+   │  │  └─ __init__.py
+   │  ├─ getters.py
+   │  ├─ Standart_dialog
+   │  │  ├─ base_callback.py
+   │  │  ├─ base_menu.py
+   │  │  └─ __init__.py
+   │  ├─ states.py
+   │  └─ __init__.py
+   ├─ handlers
+   │  ├─ standart_handlers.py
+   │  └─ __init__.py
+   ├─ kbd
+   │  ├─ keyboards.py
+   │  └─ __init__.py
+   ├─ utils
+   │  ├─ commands.py
+   │  ├─ config.py
+   │  ├─ logger_config.py
+   │  ├─ numbers.py
+   │  └─ __init.py
+   └─ __main__.py
+
+```

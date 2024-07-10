@@ -21,17 +21,23 @@ services:
     restart: 'unless-stopped'
     ports:
       - "6379:6379"
-  
-  rabbitmq:
-    image: 'rabbitmq:management'
-    hostname: 'rabbitmq'
-    restart: always
+  nats:
+    image: nats:latest
+    entrypoint: /nats-server
+    command: "-c /config/server.conf"
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "4222:4222"
+      - "8222:8222"
     volumes:
-      - ./rabbitmq_data:/var/lib/rabbitmq
-    environment:
-      - RABBITMQ_DEFAULT_USER=root
-      - RABBITMQ_DEFAULT_PASS=1111
-      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit disk_free_limit 1431655766
+      - ./nats/data:/data
+      - ./nats/config/server.conf:/config/server.conf
+  
+  nats-nui:
+    image: ghcr.io/nats-nui/nui:latest
+    container_name: nats-nui
+    ports:
+      - "31311:31311"  # Порт для доступа к NATS NUI
+    volumes:
+      - ./nui/db:/db
+    depends_on:
+      - nats
