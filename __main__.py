@@ -20,7 +20,7 @@ from tgbot.DB.db import create_user_table
 
 from tgbot.utils.logger_config import configure_logging
 from tgbot.utils.commands import set_commands
-from tgbot.constants import BOT_TOKEN
+from tgbot.config import BOT_TOKEN
 
 
 async def setup_dispatcher():
@@ -83,4 +83,3 @@ async def main():
 if __name__ == '__main__':
     configure_logging()
     asyncio.run(main())
-    print('тестово для automation.yml')
