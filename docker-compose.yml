@@ -10,6 +10,7 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
       - ADMIN=${ADMIN}
+
     depends_on:
       - redis
     links:
@@ -20,3 +21,11 @@ services:
     restart: 'unless-stopped'
     ports:
       - "6379:6379"
+  nats:
+    image: nats # Образ NATS
+    entrypoint: /nats-server # Команда запуска сервера внутри контейнера
+    ports:
+      - "4222:4222" # Основной порт для взаимодействия с сервером
+      - "8222:8222" # Порт для мониторинга сервера по HTTP (понадобится позже)
+    volumes:
+      - ./nats/data:/data

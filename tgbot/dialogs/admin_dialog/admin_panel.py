@@ -1,11 +1,14 @@
 from aiogram.types import ContentType
 from aiogram_dialog import Dialog,  Window
-from aiogram_dialog.widgets.kbd import Row, SwitchTo, Column,  Group, Cancel
+from aiogram_dialog.widgets.kbd import (
+    Row, SwitchTo, Start,
+    Column,  Group, Cancel,
+)
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.text import Const
 
 
-from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
+from tgbot.dialogs.states import AdminPanel, BroadcastPanel
 from tgbot.dialogs.getters import username_getter, object_bot
 from tgbot.dialogs.admin_dialog.admin_callback import winner_message
 
@@ -21,6 +24,11 @@ admin_panel = Dialog(
                     state=AdminPanel.Prize
                 )
             ),
+        ),
+        Start(
+            text=Const('Создать рассылку'),
+            id="broadcast",
+            state=BroadcastPanel.Text
         ),
         Column(
             Cancel(
@@ -39,5 +47,5 @@ admin_panel = Dialog(
         ),
         getter=object_bot,
         state=AdminPanel.Prize
-    )
+    ),
 )

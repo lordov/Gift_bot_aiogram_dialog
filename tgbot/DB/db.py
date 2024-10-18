@@ -1,20 +1,20 @@
 import aiomysql
 from tgbot.utils.numbers import generate_participation_number
-from tgbot.utils.config import read_config
 from tgbot.utils.logger_config import logging
-from tgbot.constants import DB_HOST,  DB_DATABASE, DB_PASSWORD, DB_USER
+from tgbot.config_data.config import Config, load_config
 
 
 db_logger = logging.getLogger('db_logger')
 
 
 async def async_connect_to_db() -> aiomysql.Connection:
+    config: Config = load_config()
     try:
         connection = await aiomysql.connect(
-            host=DB_HOST,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            db=DB_DATABASE,
+            host=config.database.host,
+            user=config.database.user,
+            password=config.database.password,
+            db=config.database.db_name,
             auth_plugin="mysql_native_password",
         )
         return connection
@@ -47,6 +47,15 @@ async def create_user_table():
             await connection.commit()
         except aiomysql.Error as e:
             db_logger.error(f"Error creating user table: {e}")
+
+
+async def get_all_users():
+    async with await async_connect_to_db() as connection:
+        async with connection.cursor(aiomysql.DictCursor) as cursor:
+            await cursor.execute("USE richcat")
+            await cursor.execute("SELECT chat_id FROM users")
+            users = await cursor.fetchall()
+    return users
 
 
 async def insert_user_data(chat_id: str, username: str, first_name: str, last_name: str):

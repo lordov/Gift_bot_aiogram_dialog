@@ -6,7 +6,10 @@ from aiogram_dialog import DialogManager, ShowMode
 from tgbot.dialogs.states import Menu, PrizeDraw
 from tgbot.kbd.keyboards import gift_yes_or_no
 from tgbot.DB.db import get_participation_value
-from tgbot.constants import ADMIN
+from tgbot.config_data.config import load_config, Config
+
+
+config: Config = load_config()
 
 
 async def ask_question_button(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
@@ -92,7 +95,12 @@ async def process_verification_screenshot(message: Message, button: Button, dial
     purchase_screenshot = dialog_manager.dialog_data.get('purchase')
 
     # Отправляем скриншоты в личный чат для проверки
-    await bot.send_photo(ADMIN, review_screenshot)
-    await bot.send_photo(ADMIN, purchase_screenshot, reply_markup=gift_yes_or_no(), caption=f'{chat_id, username, first_name, last_name}')
+    await bot.send_photo(config.admin.admin, review_screenshot)
+    await bot.send_photo(
+        config.admin.admin,
+        purchase_screenshot,
+        reply_markup=gift_yes_or_no(),
+        caption=f'{chat_id, username, first_name, last_name}'
+    )
 
     await dialog_manager.switch_to(state=PrizeDraw.finish, show_mode=ShowMode.SEND)

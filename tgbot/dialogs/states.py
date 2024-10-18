@@ -23,3 +23,9 @@ class AdminPanel(StatesGroup):
     Start = State()
     EnterWinner = State()
     Prize = State()
+
+class BroadcastPanel(StatesGroup):
+    Text = State()
+    Photo = State()
+    Url = State()
+    Confirm = State()
