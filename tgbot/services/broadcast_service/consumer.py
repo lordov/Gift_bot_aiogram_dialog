@@ -73,5 +73,6 @@ async def send_broadcast_message(bot: Bot, chat_id: int, message_data: dict):
 
     if photo:
         await bot.send_photo(chat_id=chat_id, photo=photo, caption=text, reply_markup=keyboard)
+        await bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)
     else:
         await bot.send_message(chat_id=chat_id, text=text, reply_markup=keyboard)

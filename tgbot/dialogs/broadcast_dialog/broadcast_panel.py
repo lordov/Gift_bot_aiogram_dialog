@@ -23,23 +23,21 @@ broadcast_dialog = Dialog(
         state=BroadcastPanel.Text,
     ),
     Window(
-        Const("Отправьте фото или нажмите Пропустить:"),
+        Const("Отправьте фото"),
         MessageInput(
             func=on_photo_input,
             content_types=ContentType.PHOTO
         ),
-        Button(Const("Пропустить"), id="skip_photo",
-               on_click=lambda c, b, d: d.next()),
+        Back(Const("Назад")),
         state=BroadcastPanel.Photo,
     ),
     Window(
-        Const("Введите URL для кнопки или нажмите 'Пропустить':"),
+        Const("Введите URL для кнопки"),
         MessageInput(
             func=on_url_input,
             content_types=ContentType.TEXT
         ),
-        Button(Const("Пропустить"), id="skip_url",
-               on_click=lambda c, b, d: d.next()),
+        Back(Const("Назад")),
         state=BroadcastPanel.Url,
     ),
     Window(

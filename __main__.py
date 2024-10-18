@@ -92,6 +92,7 @@ async def main():
     config: Config = load_config()
     dp = await setup_dispatcher()
     bot = await setup_bot(dp, config.tg_bot.token)
+    await create_user_table()
 
     # Подключаемся к Nats и получаем ссылки на клиент и JetStream-контекст
     nc, js = await connect_to_nats(servers=config.nats.servers)
@@ -99,7 +100,7 @@ async def main():
 
     # Создаем объект типа TranslatorHub
     translator_hub: TranslatorHub = create_translator_hub()
-    await create_user_table()
+    
     await set_commands(bot)
 
     try:

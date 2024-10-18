@@ -29,12 +29,12 @@ async def create_user_table():
         try:
             async with connection.cursor() as cursor:
                 # Создание базы данных richcat, если она не существует
-                await cursor.execute("CREATE DATABASE IF NOT EXISTS richcat")
+                await cursor.execute("CREATE DATABASE IF NOT EXISTS test")
                 # Использование базы данных richcat
-                await cursor.execute("USE richcat")
+                await cursor.execute("USE test")
                 # Создание таблицы users
                 await cursor.execute("""
-                    CREATE TABLE IF NOT EXISTS users (
+                    CREATE TABLE IF NOT EXISTS users_nats (
                         chat_id VARCHAR(255) PRIMARY KEY,
                         username VARCHAR(255) NULL,
                         first_name VARCHAR(255) NULL,
@@ -52,8 +52,7 @@ async def create_user_table():
 async def get_all_users():
     async with await async_connect_to_db() as connection:
         async with connection.cursor(aiomysql.DictCursor) as cursor:
-            await cursor.execute("USE richcat")
-            await cursor.execute("SELECT chat_id FROM users")
+            await cursor.execute("SELECT chat_id FROM users_nats WHERE is_admin = 0")
             users = await cursor.fetchall()
     return users
 
@@ -63,12 +62,12 @@ async def insert_user_data(chat_id: str, username: str, first_name: str, last_na
         try:
             async with connection.cursor() as cursor:
                 await cursor.execute("""
-                    SELECT * FROM users WHERE chat_id = %s
+                    SELECT * FROM users_nats WHERE chat_id = %s
                 """, (chat_id,))
                 result = await cursor.fetchone()
                 if not result:
                     await cursor.execute("""
-                        INSERT INTO users (chat_id, username, first_name, last_name)
+                        INSERT INTO users_nats (chat_id, username, first_name, last_name)
                         VALUES (%s, %s, %s, %s)
                     """, (chat_id, username, first_name, last_name))
                     await connection.commit()
@@ -85,7 +84,7 @@ async def update_participation_number(chat_id: str):
                 async with connection.cursor() as cursor:
                     await cursor.execute("""
                         SELECT chat_id
-                        FROM users
+                        FROM users_nats
                         WHERE number_of_part = %s
                     """, (participation_number,))
                     existing_chat_id = await cursor.fetchone()
@@ -100,7 +99,7 @@ async def update_participation_number(chat_id: str):
             try:
                 async with connection.cursor() as cursor:
                     await cursor.execute("""
-                        UPDATE users
+                        UPDATE users_nats
                         SET number_of_part = %s, participate = participate + 1
                         WHERE chat_id = %s
                     """, (participation_number, chat_id))
@@ -117,7 +116,7 @@ async def get_participation_value(chat_id: str):
             async with connection.cursor() as cursor:
                 await cursor.execute("""
                     SELECT participate
-                    FROM users
+                    FROM users_nats
                     WHERE chat_id = %s
                 """, (chat_id,))
                 result = await cursor.fetchone()
@@ -133,7 +132,7 @@ async def check_admin(chat_id: str):
         async with connection.cursor() as cur:
             cur: aiomysql.Cursor
             # Получение информации о пользователе из базы данных
-            await cur.execute("SELECT is_admin FROM users WHERE chat_id = %s", (chat_id,))
+            await cur.execute("SELECT is_admin FROM users_nats WHERE chat_id = %s", (chat_id,))
             result = await cur.fetchone()
 
             return True if result[0] == 1 else False
@@ -145,7 +144,7 @@ async def check_is_winner(chat_id: str):
             async with connection.cursor() as cursor:
                 cursor: aiomysql.Cursor
                 await cursor.execute("""
-                    SELECT chat_id FROM users WHERE `chat_id` = %s AND `participate` = '1'
+                    SELECT chat_id FROM users_nats WHERE `chat_id` = %s AND `participate` = '1'
                 """, (chat_id,))
                 result = await cursor.fetchone()
         except aiomysql.Error as e:

@@ -24,23 +24,19 @@ handlers_logger = logging.getLogger('code_logger')
 config: Config = load_config()
 
 
-# @start_router.message(CommandStart())
-# async def command_start_process(message: Message, dialog_manager: DialogManager):
-#     chat_id = message.chat.id
-#     username = message.from_user.username
-#     first_name = message.from_user.first_name
-#     last_name = message.from_user.last_name
-#     await insert_user_data(chat_id, username, first_name, last_name)
-#     await dialog_manager.start(state=Menu.Start, mode=StartMode.RESET_STACK)
-
-
-# Этот хэндлер срабатывает на команду /start
 @start_router.message(CommandStart())
-async def process_start_command(message: Message, i18n: TranslatorRunner):
-    username = html.quote(message.from_user.full_name)
+async def command_start_process(
+    message: Message,
+    dialog_manager: DialogManager,
+    i18n: TranslatorRunner
+):
+    chat_id = message.chat.id
+    username = message.from_user.username
+    first_name = message.from_user.first_name
+    last_name = message.from_user.last_name
+    await insert_user_data(chat_id, username, first_name, last_name)
     await message.answer(text=i18n.hello.user(username=username))
-
-# Этот хэндлер срабатывает на нажатие инлайн-кнопки
+    # await dialog_manager.start(state=Menu.Start, mode=StartMode.RESET_STACK)
 
 
 @start_router.message(Command('del'))
