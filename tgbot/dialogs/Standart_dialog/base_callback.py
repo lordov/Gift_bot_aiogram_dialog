@@ -5,7 +5,7 @@ from aiogram_dialog import DialogManager, ShowMode
 
 from tgbot.dialogs.states import Menu, PrizeDraw
 from tgbot.kbd.keyboards import gift_yes_or_no
-from tgbot.DB.orm_query import get_participation_value
+from tgbot.database.orm_query import get_participation_value
 from tgbot.config import ADMIN
 
 

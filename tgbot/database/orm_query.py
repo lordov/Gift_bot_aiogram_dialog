@@ -1,5 +1,5 @@
 import logging
-from DB.models import User
+from tgbot.database.models import User
 from sqlalchemy.future import select
 from sqlalchemy import update
 from sqlalchemy.exc import SQLAlchemyError
@@ -11,7 +11,7 @@ from tgbot.utils.numbers import generate_participation_number
 db_logger = logging.getLogger('db_logger')
 
 
-async def insert_user_data(chat_id: str, username: str, first_name: str, last_name: str, session: AsyncSession):
+async def insert_user_data(session: AsyncSession, chat_id: str, username: str, first_name: str, last_name: str ):
     try:
         result = await session.execute(select(User).where(User.chat_id == chat_id))
         user = result.scalars().first()
@@ -25,7 +25,7 @@ async def insert_user_data(chat_id: str, username: str, first_name: str, last_na
         await session.rollback()
 
 
-async def update_participation_number(chat_id: str, session: AsyncSession):
+async def update_participation_number(session: AsyncSession, chat_id: str, ):
     while True:
         participation_number = generate_participation_number()
 
@@ -54,7 +54,7 @@ async def update_participation_number(chat_id: str, session: AsyncSession):
     return participation_number
 
 
-async def get_participation_value(chat_id: str, session: AsyncSession):
+async def get_participation_value(session: AsyncSession, chat_id: str):
     try:
         result = await session.execute(select(User.participate).where(User.chat_id == chat_id))
         participation_value = result.scalars().first()
@@ -64,7 +64,7 @@ async def get_participation_value(chat_id: str, session: AsyncSession):
         return 0
 
 
-async def check_admin(chat_id: str, session: AsyncSession):
+async def check_admin(session: AsyncSession, chat_id: str):
     try:
         result = await session.execute(select(User.is_admin).where(User.chat_id == chat_id))
         is_admin = result.scalars().first()
@@ -74,7 +74,7 @@ async def check_admin(chat_id: str, session: AsyncSession):
         return False
 
 
-async def check_is_winner(chat_id: str, session: AsyncSession):
+async def check_is_winner(session: AsyncSession, chat_id: str):
     try:
         result = await session.execute(select(User.chat_id).where(User.chat_id == chat_id, User.participate == 1))
         winner = result.scalars().first()
@@ -82,3 +82,13 @@ async def check_is_winner(chat_id: str, session: AsyncSession):
     except SQLAlchemyError as e:
         db_logger.error(f"Error checking winner status: {e}")
         return False
+
+
+async def get_all_users(session: AsyncSession):
+    try:
+        result = await session.execute(select(User.chat_id).where(User.is_admin == 0))
+        users = result.fetchall()
+        return users[0]
+    except SQLAlchemyError as e:
+        db_logger.error(f"Error getting all users: {e}")
+        return []

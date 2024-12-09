@@ -1,10 +1,11 @@
 from aiogram.types import User
 from aiogram_dialog import DialogManager
-from tgbot.DB.db import check_admin
+from tgbot.database.orm_query import check_admin
 
 
 async def username_getter(event_from_user: User, **kwargs):
-    is_admin = await check_admin(event_from_user.id)
+    session = kwargs.get('session')
+    is_admin = await check_admin(session, event_from_user.id)
     return {'username': event_from_user.username,
             'is_admin': is_admin}
 

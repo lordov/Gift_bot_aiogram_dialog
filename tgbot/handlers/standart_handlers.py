@@ -1,3 +1,5 @@
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from aiogram import Router, Bot, F
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message, CallbackQuery
@@ -6,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.exceptions import TelegramBadRequest
 
 
-from tgbot.DB.orm_query import insert_user_data, check_admin, update_participation_number
+from tgbot.database.orm_query import insert_user_data, check_admin, update_participation_number, get_all_users
 from tgbot.dialogs.states import Menu, AdminPanel
 from tgbot.utils.logger_config import logging
 from tgbot.config import ADMIN
@@ -17,12 +19,13 @@ handlers_logger = logging.getLogger('code_logger')
 
 
 @start_router.message(CommandStart())
-async def command_start_process(message: Message, dialog_manager: DialogManager):
+async def command_start_process(message: Message, dialog_manager: DialogManager, session: AsyncSession):
     chat_id = message.chat.id
     username = message.from_user.username
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
-    await insert_user_data(chat_id, username, first_name, last_name)
+    users = await get_all_users(session)
+    await insert_user_data(session, chat_id, username, first_name, last_name)
     await dialog_manager.start(state=Menu.Start, mode=StartMode.RESET_STACK)
 
 
@@ -35,11 +38,11 @@ async def start_admin_dialog(message: Message, dialog_manager: DialogManager):
 
 
 @start_router.callback_query(F.data == "verification_yes")
-async def process_verification_response(callback: CallbackQuery, state: FSMContext, bot: Bot):
+async def process_verification_response(callback: CallbackQuery, state: FSMContext, bot: Bot, session: AsyncSession):
     caption = callback.message.caption
     chat_id = caption.split(',')[0].strip('()')
     message_id = callback.message.message_id
-    number = await update_participation_number(chat_id)
+    number = await update_participation_number(session, chat_id)
     text = f'''Поздравляем, Вы среди участников нашего розыгрыша, который состоится \
     5 февраля в 15.00 в прямом эфире в нашем телеграм-канале https://t.me/richcatkovry.\
     

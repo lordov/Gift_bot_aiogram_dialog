@@ -5,7 +5,7 @@ from aiogram_dialog.widgets.kbd import Button
 from aiogram_dialog import DialogManager
 
 from tgbot.dialogs.states import AdminPanel
-from tgbot.DB.db import check_is_winner
+from tgbot.database.orm_query import check_is_winner
 
 
 async def winner_message(message: Message, button: Button, dialog_manager: DialogManager):

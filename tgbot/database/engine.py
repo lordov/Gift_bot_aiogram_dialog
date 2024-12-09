@@ -5,11 +5,10 @@ from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 from sqlalchemy import DateTime
 from datetime import datetime
 
-from tgbot.config import DB_HOST, DB_NAME, DB_PASS, DB_USER, DB_PORT
+from tgbot.config import DATABASE_URL
 
 
-DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-
+DATABASE_LITE = "sqlite+aiosqlite:///sqlite.db"
 
 class Base(DeclarativeBase):
     created: Mapped[DateTime] = mapped_column(
@@ -18,13 +17,14 @@ class Base(DeclarativeBase):
         DateTime(), default=datetime.now(), onupdate=datetime.now())
 
 
-engine = create_async_engine(DATABASE_URL)
+engine = create_async_engine(DATABASE_LITE)
 async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
 
 async def create_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    
     
 
 async def drop_db():

@@ -1,13 +1,12 @@
 from sqlalchemy import (
-    Column, Integer, String,
-    TIMESTAMP, ForeignKey, JSON, Boolean
+   Integer, String, Boolean
 )
 
 from sqlalchemy.orm import (
     relationship, mapped_column, Mapped
 )
 
-from tgbot.DB.database import Base
+from tgbot.database import Base
 
 
 class User(Base):

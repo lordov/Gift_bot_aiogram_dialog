@@ -12,12 +12,12 @@ from redis.exceptions import ConnectionError
 from aiogram_dialog import setup_dialogs
 
 # from handlers.standart_handlers import router
-from tgbot.DB.database import create_db
+from tgbot.database.engine import create_db
 from tgbot.dialogs.Standart_dialog import start_dialog, prize_dialog
 from tgbot.dialogs.admin_dialog import admin_panel
 from tgbot.handlers import router_list
-
-from tgbot.DB.orm_query import create_user_table
+from tgbot.database.engine import async_session_maker
+from tgbot.middlewares.db_session import DataBaseSession
 
 from tgbot.utils.logger_config import configure_logging
 from tgbot.utils.commands import set_commands
@@ -35,7 +35,6 @@ async def setup_dispatcher():
     Returns:
         Dispatcher: Объект диспетчера aiogram.
     """
-
     redis = Redis()
     try:
         await redis.ping()
@@ -64,6 +63,7 @@ async def setup_bot(dp: Dispatcher):
     await set_commands(bot)
     dp.include_routers(*router_list)
     dp.include_routers(admin_panel, start_dialog, prize_dialog)
+    dp.update.outer_middleware(DataBaseSession(session_pool=async_session_maker))
     setup_dialogs(dp)
     return bot
 
