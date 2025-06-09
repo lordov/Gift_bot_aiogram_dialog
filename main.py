@@ -63,7 +63,8 @@ async def setup_bot(dp: Dispatcher):
     await set_commands(bot)
     dp.include_routers(*router_list)
     dp.include_routers(admin_panel, start_dialog, prize_dialog)
-    dp.update.outer_middleware(DataBaseSession(session_pool=async_session_maker))
+    dp.update.outer_middleware(DataBaseSession(
+        session_pool=async_session_maker))
     setup_dialogs(dp)
     return bot
 

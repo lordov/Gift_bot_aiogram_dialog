@@ -1,43 +1,47 @@
-version: "3.8"
+version: "3.9"
+
 services:
   bot:
-    image: 'lordovat/testrep:mybot_latest' # Путь к образу из удаленного реестра
-    restart: 'unless-stopped'
-    environment:
-      - BOT_TOKEN=${BOT_TOKEN}
-      - DB_HOST=${DB_HOST}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_DATABASE=${DB_DATABASE}
-      - ADMIN=${ADMIN}
-      
+    build: .
+    container_name: bot_gift
+    command: [ "python", "main.py" ]
+    env_file: .env
     depends_on:
+      - db
       - redis
-    links:
-      - redis
+    restart: always
+
+  # migrate:
+  #   build: .
+  #   container_name: migrate_gift
+  #   command: [ "alembic", "upgrade", "head" ]
+  #   env_file: .env
+  #   volumes:
+  #     - .:/app
+  #   working_dir: /app
+  #   depends_on:
+  #     - db
+  #   restart: "no" # однократный запуск
+
+  db:
+    image: postgres:latest
+    container_name: postgres_gift
+    environment:
+      POSTGRES_DB: ${POSTGRES__DB}
+      POSTGRES_USER: ${POSTGRES__USER}
+      POSTGRES_PASSWORD: ${POSTGRES__PASSWORD}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
 
   redis:
-    image: 'redis:latest'
-    restart: 'unless-stopped'
+    image: redis:latest
+    container_name: redis_gift
     ports:
       - "6379:6379"
-  nats:
-    image: nats:latest
-    entrypoint: /nats-server
-    command: "-c /config/server.conf"
-    ports:
-      - "4222:4222"
-      - "8222:8222"
-    volumes:
-      - ./nats/data:/data
-      - ./nats/config/server.conf:/config/server.conf
-  
-  nats-nui:
-    image: ghcr.io/nats-nui/nui:latest
-    container_name: nats-nui
-    ports:
-      - "31311:31311"  # Порт для доступа к NATS NUI
-    volumes:
-      - ./nui/db:/db
-    depends_on:
-      - nats
+    restart: always
+
+volumes:
+  pgdata:

@@ -33,7 +33,7 @@ async def command_start_process(message: Message, dialog_manager: DialogManager,
 async def start_admin_dialog(message: Message, dialog_manager: DialogManager):
     chat_id = message.from_user.id
     if await check_admin(chat_id):
-        await message.answer('Ты одмен')
+        await message.answer('Ты админ')
         await dialog_manager.start(state=AdminPanel.Start)
 
 
@@ -43,10 +43,7 @@ async def process_verification_response(callback: CallbackQuery, state: FSMConte
     chat_id = caption.split(',')[0].strip('()')
     message_id = callback.message.message_id
     number = await update_participation_number(session, chat_id)
-    text = f'''Поздравляем, Вы среди участников нашего розыгрыша, который состоится \
-    5 февраля в 15.00 в прямом эфире в нашем телеграм-канале https://t.me/richcatkovry.\
-    
-Ваш порядковый номер <b>{number}</b>. Удачи!'''
+    text = f'''Text для розыгрыша'''
     try:
         await bot.send_message(chat_id=chat_id, text=text, parse_mode='HTML')
         # Убираем инлайн-клавиатуру

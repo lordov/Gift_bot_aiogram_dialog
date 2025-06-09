@@ -1,23 +1,20 @@
-# Сборочный образ
-FROM python:3.11-slim-bullseye as compile-image
+FROM python:3.12-slim
 
-# Создаем виртуальное окружение и устанавливаем зависимости
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip \
-    && pip install --no-cache-dir -r requirements.txt
+# Установка системных зависимостей
+RUN apt-get update && apt-get install -y \
+    build-essential gcc libpq-dev curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Образ для запуска
-FROM python:3.11-slim-bullseye as run-image
-
-# Копируем виртуальное окружение из сборочного образа
-COPY --from=compile-image /opt/venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+# Создание рабочей директории
 WORKDIR /app
 
-# Копируем файлы бота в контейнер
-COPY tgbot /app/tgbot
+# Обновление pip и установка зависимостей
+COPY requirements.txt .
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Команда запуска бота
-CMD ["python", "-m", "tgbot"]
+# Копируем весь проект
+COPY . .
+
+# Команда по умолчанию (может переопределяться в docker-compose)
+CMD ["python", "main.py"]

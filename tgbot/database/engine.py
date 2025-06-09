@@ -5,7 +5,7 @@ from sqlalchemy.orm import DeclarativeBase, mapped_column, Mapped
 from sqlalchemy import DateTime
 from datetime import datetime
 
-from tgbot.config import DATABASE_URL
+from tgbot.config import settings
 
 
 DATABASE_LITE = "sqlite+aiosqlite:///sqlite.db"

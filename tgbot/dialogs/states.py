@@ -23,3 +23,22 @@ class AdminPanel(StatesGroup):
     Start = State()
     EnterWinner = State()
     Prize = State()
+
+
+class GiveawayDialog(StatesGroup):
+    """Состояния для диалога розыгрыша"""
+    Start = State()
+    SubscriptionCheck = State()
+    ScreenshotUpload = State()
+    ScreenshotVerification = State()
+    Participation = State()
+    AlreadyParticipated = State()
+
+
+class GiveawayAdminPanel(StatesGroup):
+    """Состояния для административной панели розыгрыша"""
+    Start = State()
+    SetGiveawayText = State()
+    SetGiveawayImage = State()
+    ExportParticipants = State()
+    ManageGiveaway = State()
