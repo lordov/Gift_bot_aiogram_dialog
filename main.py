@@ -15,10 +15,12 @@ from aiogram_dialog import setup_dialogs
 from tgbot.database.engine import create_db
 from tgbot.dialogs.standart import start_dialog, prize_dialog
 from tgbot.dialogs.admin import admin_panel
+from tgbot.dialogs.giveaway import giveaway_dialog
 from tgbot.handlers import router_list
 from tgbot.database.engine import async_session_maker
 from tgbot.middlewares.db_session import DataBaseSession
-
+from tgbot.middlewares.i18n import TranslatorRunnerMiddleware
+from tgbot.utils.i18n import create_translator_hub
 from tgbot.utils.logger_config import configure_logging
 from tgbot.utils.commands import set_commands
 from tgbot.config import settings
@@ -62,9 +64,12 @@ async def setup_bot(dp: Dispatcher):
         parse_mode=ParseMode.HTML))
     await set_commands(bot)
     dp.include_routers(*router_list)
-    dp.include_routers(admin_panel, start_dialog, prize_dialog)
+    dp.include_routers(admin_panel, start_dialog,
+                       prize_dialog, giveaway_dialog)
     dp.update.outer_middleware(DataBaseSession(
         session_pool=async_session_maker))
+    dp.update.outer_middleware(TranslatorRunnerMiddleware(
+        translator_hub=create_translator_hub()))
     setup_dialogs(dp)
     return bot
 

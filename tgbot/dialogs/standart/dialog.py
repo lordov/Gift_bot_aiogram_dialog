@@ -9,8 +9,8 @@ from aiogram_dialog.widgets.media import StaticMedia
 from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
 from tgbot.dialogs.getters import username_getter, object_bot
 from tgbot.dialogs.standart.callback import (
-    products_60_120, products_75_150,
-    process_review_screenshot, process_verification_screenshot)
+    process_review_screenshot, process_verification_screenshot
+)
 
 
 start_dialog = Dialog(
@@ -59,114 +59,6 @@ start_dialog = Dialog(
             ),
         ),
         state=Menu.help_rich_cat),
-    Window(
-        Const('Выбор размера'),
-        Row(
-            Button(
-                Const('60*120'),
-                id='go_to_60_120',
-                on_click=products_60_120,
-            ),
-            Button(
-                Const('75*150'),
-                id='go_to_75_150',
-                on_click=products_75_150,
-            ),
-        ),
-        Column(
-            SwitchTo(
-                Const('◀️ Назад'),
-                id='back',
-                state=Menu.Start
-            )
-        ),
-        state=Menu.product_size
-    ),
-    Window(
-        Const('<b>Ссылки на товар</b>'),
-        Row(
-            Url(
-                text=Const('126758787'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/126758787/detail.aspx'),
-                id='126758787'),
-            Url(
-                text=Const('194079890'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/194079890/detail.aspx'),
-                id='194079890'),
-            Url(
-                text=Const('194079888'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/194079888/detail.aspx'),
-                id='194079888'),
-        ),
-        Row(
-            Url(
-                text=Const('194079894'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/194079894/detail.aspx'),
-                id='194079894'),
-            Url(
-                text=Const('126025374'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/126025374/detail.aspx'),
-                id='126025374'),
-            Url(
-                text=Const('126756271'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/126756271/detail.aspx'),
-                id='126756271'),
-        ),
-        Column(
-            SwitchTo(
-                Const('◀️ Назад'),
-                id='back',
-                state=Menu.Start
-            )
-        ),
-        state=Menu.Url_60_120
-    ),
-    Window(
-        Const('Ссылки на товар'),
-        Row(
-            Url(
-                text=Const('194079892'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/194079892/detail.aspx'),
-                id='194079892'),
-            Url(
-                text=Const('194079893'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/194079893/detail.aspx'),
-                id='194079893'),
-        ),
-        Row(
-            Url(
-                text=Const('194079891'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/194079891/detail.aspx'),
-                id='194079891'),
-            Url(
-                text=Const('128615052'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/128615052/detail.aspx'),
-                id='194079894'),
-            Url(
-                text=Const('128603867'),
-                url=Const(
-                    'https://www.wildberries.ru/catalog/128603867/detail.aspx'),
-                id='128603867'),
-        ),
-        Column(
-            SwitchTo(
-                Const('◀️'),
-                id='back',
-                state=Menu.Start
-            )
-        ),
-        state=Menu.Url_75_150
-    )
 )
 
 

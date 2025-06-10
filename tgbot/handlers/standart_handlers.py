@@ -24,7 +24,6 @@ async def command_start_process(message: Message, dialog_manager: DialogManager,
     username = message.from_user.username
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
-    users = await get_all_users(session)
     await insert_user_data(session, chat_id, username, first_name, last_name)
     await dialog_manager.start(state=Menu.Start, mode=StartMode.RESET_STACK)
 
