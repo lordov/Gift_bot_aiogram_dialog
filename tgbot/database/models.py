@@ -1,5 +1,6 @@
 from sqlalchemy import (
-    Integer, String, Boolean, DateTime, ForeignKey, Text, LargeBinary
+    Integer, String, Boolean, 
+    DateTime, ForeignKey, Text
 )
 
 from sqlalchemy.orm import (

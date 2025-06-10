@@ -21,7 +21,7 @@ from tgbot.middlewares.db_session import DataBaseSession
 
 from tgbot.utils.logger_config import configure_logging
 from tgbot.utils.commands import set_commands
-from tgbot.config import BOT_TOKEN
+from tgbot.config import settings
 
 
 async def setup_dispatcher():
@@ -58,7 +58,7 @@ async def setup_bot(dp: Dispatcher):
     Returns:
         Bot: Объект бота aiogram.
     """
-    bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(
+    bot = Bot(token=settings.bot.token.get_secret_value(), default=DefaultBotProperties(
         parse_mode=ParseMode.HTML))
     await set_commands(bot)
     dp.include_routers(*router_list)
@@ -70,10 +70,10 @@ async def setup_bot(dp: Dispatcher):
 
 
 async def main():
-
     dp = await setup_dispatcher()
     bot = await setup_bot(dp)
 
+    # Удалить после тестирования
     await create_db()
     await set_commands(bot)
 
@@ -85,4 +85,3 @@ async def main():
 if __name__ == '__main__':
     configure_logging()
     asyncio.run(main())
-    print('тестово для automation.yml')

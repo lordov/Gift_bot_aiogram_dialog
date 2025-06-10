@@ -3,6 +3,7 @@
 
 *.env
 *nui
+*.db
 
 *__pycache__
 *.venv

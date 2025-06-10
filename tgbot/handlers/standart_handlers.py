@@ -11,7 +11,7 @@ from aiogram.exceptions import TelegramBadRequest
 from tgbot.database.orm_query import insert_user_data, check_admin, update_participation_number, get_all_users
 from tgbot.dialogs.states import Menu, AdminPanel
 from tgbot.utils.logger_config import logging
-from tgbot.config import ADMIN
+from tgbot.config import settings
 
 
 start_router = Router()
@@ -47,7 +47,7 @@ async def process_verification_response(callback: CallbackQuery, state: FSMConte
     try:
         await bot.send_message(chat_id=chat_id, text=text, parse_mode='HTML')
         # Убираем инлайн-клавиатуру
-        await bot.edit_message_reply_markup(chat_id=ADMIN, message_id=message_id, reply_markup=None)
+        await bot.edit_message_reply_markup(chat_id=settings.bot.admin_id, message_id=message_id, reply_markup=None)
         await callback.message.answer("Данные подтверждены")
     except TelegramBadRequest as e:
         print(e)
@@ -61,5 +61,5 @@ async def process_verification_response(callback: CallbackQuery, state: FSMConte
     text = f'''Извините, но похоже, вы отправили не те скриншоты. Пожалуйста, отправьте корректные скриншоты.
 Вы можете задать свой вопрос в нашем чате.'''
     await bot.send_message(chat_id=chat_id, text=text, parse_mode='HTML')
-    await bot.edit_message_reply_markup(chat_id=ADMIN, message_id=message_id, reply_markup=None)
+    await bot.edit_message_reply_markup(chat_id=settings.bot.admin_id, message_id=message_id, reply_markup=None)
     await callback.message.answer("Данные отклонены.")
