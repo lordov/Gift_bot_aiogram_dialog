@@ -31,12 +31,11 @@ class AdminPanel(StatesGroup):
 
 class GiveawayDialog(StatesGroup):
     """Состояния для диалога розыгрыша"""
-    Start = State()
-    SubscriptionCheck = State()
-    ScreenshotUpload = State()
-    ScreenshotVerification = State()
-    Participation = State()
-    AlreadyParticipated = State()
+    start = State()
+    subscription_check = State()
+    screenshot_upload = State()
+    screenshot_verification = State()
+    wait_for_desicion = State()
 
 
 class GiveawayAdminPanel(StatesGroup):

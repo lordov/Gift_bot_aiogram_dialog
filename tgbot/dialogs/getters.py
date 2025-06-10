@@ -42,6 +42,7 @@ async def get_giveaway_data(
 
     return {
         "ready_to_giveaway": not already_been,
+        "giveaway_thanks": i18n.get('giveaway-thanks'),
         "not_ready_to_giveaway": already_been,
         "giveaway_already_participated": i18n.get('giveaway-already-participated'),
         "giveaway_welcome": i18n.get('giveaway-welcome'),

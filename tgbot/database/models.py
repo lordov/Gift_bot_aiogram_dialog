@@ -1,6 +1,6 @@
 from sqlalchemy import (
     Integer, String, Boolean, 
-    DateTime, ForeignKey, Text
+    DateTime, ForeignKey, Text, UniqueConstraint
 )
 
 from sqlalchemy.orm import (
@@ -11,6 +11,7 @@ from tgbot.database.engine import Base
 from datetime import datetime
 
 
+
 class User(Base):
     __tablename__ = "users"
 
@@ -19,10 +20,7 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(255), nullable=True)
     first_name: Mapped[str] = mapped_column(String(255), nullable=True)
     last_name: Mapped[str] = mapped_column(String(255), nullable=True)
-    participate: Mapped[int] = mapped_column(Integer, default=0)
-    number_of_part: Mapped[str] = mapped_column(String(255), nullable=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
-    last_participation_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     is_subscribed: Mapped[bool] = mapped_column(Boolean, default=False)
 
     participations = relationship("Participation", back_populates="user")
@@ -44,6 +42,11 @@ class Participation(Base):
     screenshot_verified: Mapped[bool] = mapped_column(Boolean, default=False)
 
     user = relationship("User", back_populates="participations")
+    
+    # Добавляем уникальный ключ для ограничения участия (один раз в месяц)
+    __table_args__ = (
+        UniqueConstraint('user_id', 'month', 'year', name='uq_participation_once_per_month'),
+    )
 
 
 class GiveawaySettings(Base):

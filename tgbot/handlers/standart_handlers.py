@@ -8,7 +8,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.exceptions import TelegramBadRequest
 
 
-from tgbot.database.orm_query import insert_user_data, check_admin, update_participation_number, get_all_users
+from tgbot.database.orm_query import add_participation, insert_user_data, check_admin
 from tgbot.dialogs.states import Menu, AdminPanel
 from tgbot.utils.logger_config import logging
 from tgbot.config import settings
@@ -41,8 +41,11 @@ async def process_verification_response(callback: CallbackQuery, state: FSMConte
     caption = callback.message.caption
     chat_id = caption.split(',')[0].strip('()')
     message_id = callback.message.message_id
-    number = await update_participation_number(session, chat_id)
-    text = f'''Text для розыгрыша'''
+    
+    # Добавляем участие с подтвержденным скриншотом
+    number = await add_participation(session, chat_id, screenshot_verified=True)
+
+    text = f'''Скриншоты подтверждены. Ваш номер для участия: {number}'''
     try:
         await bot.send_message(chat_id=chat_id, text=text, parse_mode='HTML')
         # Убираем инлайн-клавиатуру
@@ -57,8 +60,7 @@ async def process_verification_response(callback: CallbackQuery, state: FSMConte
     caption = callback.message.caption
     chat_id = caption.split(',')[0].strip('()')
     message_id = callback.message.message_id
-    text = f'''Извините, но похоже, вы отправили не те скриншоты. Пожалуйста, отправьте корректные скриншоты.
-Вы можете задать свой вопрос в нашем чате.'''
+    text = f'''Извините, но похоже, вы отправили не те скриншоты. Пожалуйста, отправьте корректные скриншоты.'''
     await bot.send_message(chat_id=chat_id, text=text, parse_mode='HTML')
     await bot.edit_message_reply_markup(chat_id=settings.bot.admin_id, message_id=message_id, reply_markup=None)
     await callback.message.answer("Данные отклонены.")

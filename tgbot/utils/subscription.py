@@ -2,7 +2,7 @@ from aiogram import Bot
 from aiogram.exceptions import TelegramAPIError
 
 
-async def check_user_subscription(bot: Bot, user_id: int, channel_id: str) -> bool:
+async def check_user_subscription(bot: Bot, user_id: int, channel_id: int) -> bool:
     """Проверяет, подписан ли пользователь на указанный канал"""
     try:
         # Проверяем статус пользователя в канале
@@ -12,6 +12,6 @@ async def check_user_subscription(bot: Bot, user_id: int, channel_id: str) -> bo
         subscription_statuses = ['creator', 'administrator', 'member']
         
         return member.status in subscription_statuses
-    except TelegramAPIError:
-        # В случае ошибки считаем, что пользователь не подписан
+    except TelegramAPIError as e:
+        print(f"Ошибка при проверке подписки: {e}")
         return False 

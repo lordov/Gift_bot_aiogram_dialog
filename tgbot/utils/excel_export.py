@@ -1,22 +1,23 @@
 import pandas as pd
 import os
 from datetime import datetime
-from tgbot.database.models import User
+from tgbot.database.models import User, Participation
 
 
-async def export_participants_to_excel(participants: list[User]):
+async def export_participants_to_excel(participants: list[tuple[User, Participation]]):
     """Экспортирует данные участников в Excel-файл"""
     # Создаем DataFrame из данных участников
     data = []
-    for user in participants:
+    for user, participation in participants:
         data.append({
             'ID': user.id,
             'Username': user.username,
             'First Name': user.first_name,
             'Last Name': user.last_name,
-            'Participation Number': user.number_of_part,
-            'Participation Date': user.last_participation_date.strftime('%Y-%m-%d %H:%M:%S') if user.last_participation_date else '',
-            'Total Participations': user.participate
+            'Participation Number': participation.participation_number,
+            'Participation Date': participation.participation_date.strftime('%Y-%m-%d %H:%M:%S'),
+            'Total Participations': user.participate,
+            'Screenshot Verified': 'Да' if participation.screenshot_verified else 'Нет'
         })
 
     df = pd.DataFrame(data)

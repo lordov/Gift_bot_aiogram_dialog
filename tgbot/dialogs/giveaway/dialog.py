@@ -2,10 +2,11 @@ from aiogram.types import ContentType
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import Button, Row, Cancel, Back
+from aiogram_dialog.widgets.kbd import Button, Cancel, Back, Column
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.media import DynamicMedia
+
 
 from tgbot.dialogs.giveaway.callback import on_subscription_check, process_screenshot
 from tgbot.dialogs.states import GiveawayDialog
@@ -29,7 +30,7 @@ giveaway_dialog = Dialog(
         Cancel(
             Format("{btn_back}")
         ),
-        state=GiveawayDialog.Start,
+        state=GiveawayDialog.start,
         getter=get_giveaway_data,
     ),
     Window(
@@ -41,16 +42,17 @@ giveaway_dialog = Dialog(
         Back(
             Format("{btn_back}")
         ),
-        state=GiveawayDialog.ScreenshotUpload,
+        state=GiveawayDialog.screenshot_upload,
         getter=get_giveaway_data,
     ),
     Window(
-        Format("{giveaway_thanks}"),
-        Format("{giveaway_follow_up}"),
-        Cancel(
-            Format("{btn_back}"),
+        Const('Скриншоты успешно отправлены на проверку. Ожидайте результатов.'),
+        Column(
+            Cancel(
+                Const('◀️ Вернуться на главную'),
+                id='cancel_after_screenshots',
+            ),
         ),
-        state=GiveawayDialog.Participation,
+        state=GiveawayDialog.wait_for_desicion,
     ),
-    getter=get_giveaway_data
 )

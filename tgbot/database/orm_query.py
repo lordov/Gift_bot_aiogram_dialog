@@ -27,31 +27,17 @@ async def insert_user_data(session: AsyncSession, chat_id: str, username: str, f
         await session.rollback()
 
 
-async def update_participation_number(session: AsyncSession, chat_id: str, ):
-    while True:
-        participation_number = generate_participation_number()
+async def update_participation_number(session: AsyncSession, chat_id: str):
+    """Устаревшая функция, используйте add_participation вместо нее"""
+    # Получаем пользователя
+    result = await session.execute(select(User).where(User.chat_id == chat_id))
+    user = result.scalar_one_or_none()
 
-        try:
-            result = await session.execute(select(User).where(User.number_of_part == participation_number))
-            existing_user = result.scalars().first()
-        except SQLAlchemyError as e:
-            db_logger.error(
-                f"Error checking participation number uniqueness: {e}")
-            continue
+    if not user:
+        return None
 
-        if not existing_user:
-            break
-
-    try:
-        await session.execute(
-            update(User)
-            .where(User.chat_id == chat_id)
-            .values(number_of_part=participation_number, participate=User.participate + 1)
-        )
-        await session.commit()
-    except SQLAlchemyError as e:
-        db_logger.error(f"Error updating participation number: {e}")
-        await session.rollback()
+    # Добавляем участие и получаем номер
+    participation_number = await add_participation(session, chat_id, screenshot_verified=True)
 
     return participation_number
 
@@ -77,10 +63,23 @@ async def check_admin(session: AsyncSession, chat_id: str):
 
 
 async def check_is_winner(session: AsyncSession, chat_id: str):
+    """Проверяет, является ли пользователь победителем розыгрыша"""
     try:
-        result = await session.execute(select(User.chat_id).where(User.chat_id == chat_id, User.participate == 1))
-        winner = result.scalars().first()
-        return bool(winner)
+        # Получаем пользователя
+        user_result = await session.execute(select(User).where(User.chat_id == chat_id))
+        user = user_result.scalar_one_or_none()
+
+        if not user:
+            return False
+
+        # Проверяем, есть ли записи об участии
+        result = await session.execute(
+            select(Participation)
+            .where(Participation.user_id == user.id)
+        )
+        participation = result.scalar_one_or_none()
+
+        return bool(participation)
     except SQLAlchemyError as e:
         db_logger.error(f"Error checking winner status: {e}")
         return False
@@ -109,19 +108,27 @@ async def check_monthly_participation(session: AsyncSession, chat_id: int):
         if not user:
             return False
 
-        # Проверяем, есть ли запись об участии в текущем месяце
-        # Здесь мы предполагаем, что поле last_participation_date содержит дату последнего участия
-        if user.last_participation_date:
-            return (user.last_participation_date.month == current_month and
-                    user.last_participation_date.year == current_year)
-        return False
+        # Проверяем, есть ли запись об участии в текущем месяце в таблице Participation
+        result = await session.execute(
+            select(Participation)
+            .where(
+                Participation.user_id == user.id,
+                Participation.month == current_month,
+                Participation.year == current_year
+            )
+        )
+        participation = result.scalar_one_or_none()
+        return bool(participation)
     except SQLAlchemyError as e:
         db_logger.error(f"Error checking monthly participation: {e}")
         return False
 
 
-async def add_participation(session: AsyncSession, chat_id: int):
+async def add_participation(session: AsyncSession, chat_id: int, screenshot_verified: bool = False):
     """Добавляет запись об участии пользователя в розыгрыше текущего месяца"""
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+
     try:
         # Получаем пользователя
         result = await session.execute(select(User).where(User.chat_id == chat_id))
@@ -130,13 +137,45 @@ async def add_participation(session: AsyncSession, chat_id: int):
         if not user:
             return None
 
-        # Генерируем уникальный номер участия
-        participation_number = generate_participation_number()
+        # Проверяем, участвовал ли пользователь в этом месяце
+        existing_participation = await session.execute(
+            select(Participation)
+            .where(
+                Participation.user_id == user.id,
+                Participation.month == current_month,
+                Participation.year == current_year
+            )
+        )
+        existing = existing_participation.scalar_one_or_none()
 
-        # Обновляем данные пользователя
-        user.last_participation_date = datetime.now()
-        user.participate = user.participate + 1
-        user.number_of_part = participation_number
+        # Если пользователь уже участвовал в этом месяце, возвращаем его номер участия
+        if existing:
+            return existing.participation_number
+
+        # Генерируем уникальный номер участия
+        while True:
+            participation_number = generate_participation_number()
+
+            # Проверяем уникальность номера
+            result = await session.execute(
+                select(Participation)
+                .where(Participation.participation_number == participation_number)
+            )
+            existing_participation = result.scalar_one_or_none()
+
+            if not existing_participation:
+                break
+
+        # Создаем запись об участии в таблице Participation
+        new_participation = Participation(
+            user_id=user.id,
+            participation_number=participation_number,
+            participation_date=datetime.now(),
+            month=current_month,
+            year=current_year,
+            screenshot_verified=screenshot_verified
+        )
+        session.add(new_participation)
 
         await session.commit()
         return participation_number
@@ -191,15 +230,16 @@ async def get_all_participants_by_month(session: AsyncSession, month: int = None
         year = datetime.now().year
 
     try:
+        # Получаем записи об участии и связанных пользователей
         result = await session.execute(
-            select(User)
+            select(User, Participation)
+            .join(Participation, User.id == Participation.user_id)
             .where(
-                User.last_participation_date != None,
-                User.last_participation_date.month == month,
-                User.last_participation_date.year == year
+                Participation.month == month,
+                Participation.year == year
             )
         )
-        participants = result.scalars().all()
+        participants = result.all()
         return participants
     except SQLAlchemyError as e:
         db_logger.error(f"Error getting participants: {e}")
@@ -292,3 +332,32 @@ async def get_all_giveaway_settings(session: AsyncSession):
     except SQLAlchemyError as e:
         db_logger.error(f"Error getting all giveaway settings: {e}")
         return []
+
+
+async def get_participation_number(session: AsyncSession, chat_id: int):
+    """Получает номер участия пользователя в текущем месяце"""
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+
+    try:
+        # Получаем пользователя
+        user_result = await session.execute(select(User).where(User.chat_id == chat_id))
+        user = user_result.scalar_one_or_none()
+
+        if not user:
+            return None
+
+        # Получаем запись об участии
+        result = await session.execute(
+            select(Participation.participation_number)
+            .where(
+                Participation.user_id == user.id,
+                Participation.month == current_month,
+                Participation.year == current_year
+            )
+        )
+        participation_number = result.scalar_one_or_none()
+        return participation_number
+    except SQLAlchemyError as e:
+        db_logger.error(f"Error getting participation number: {e}")
+        return None

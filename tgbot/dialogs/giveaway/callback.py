@@ -1,5 +1,6 @@
+from aiogram import Bot
 from aiogram.types import Message, CallbackQuery, FSInputFile
-from aiogram_dialog import DialogManager
+from aiogram_dialog import DialogManager, ShowMode
 from aiogram_dialog.widgets.kbd import Button
 
 from tgbot.dialogs.states import GiveawayDialog
@@ -10,12 +11,14 @@ from tgbot.database.orm_query import (
     get_current_giveaway_settings,
     update_subscription_status
 )
+from tgbot.kbd.keyboards import gift_yes_or_no
 from tgbot.utils.subscription import check_user_subscription
+from tgbot.config import settings
 
 
 async def start_giveaway(message: Message, dialog_manager: DialogManager):
     """Начало диалога розыгрыша"""
-    await dialog_manager.start(GiveawayDialog.Start)
+    await dialog_manager.start(GiveawayDialog.start)
 
 
 async def on_subscription_check(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
@@ -37,48 +40,35 @@ async def on_subscription_check(callback: CallbackQuery, button: Button, dialog_
     await update_subscription_status(session, chat_id, is_subscribed)
 
     if is_subscribed:
-        await dialog_manager.switch_to(GiveawayDialog.ScreenshotUpload)
+        await dialog_manager.switch_to(GiveawayDialog.screenshot_upload)
     else:
         await callback.answer("Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.")
         return
 
 
-async def process_screenshot(message: Message, dialog_manager: DialogManager):
+async def process_screenshot(message: Message, button: Button, dialog_manager: DialogManager):
     """Обработка загруженного скриншота"""
     if not message.photo:
         await message.answer("Пожалуйста, отправьте скриншот как изображение.")
         return
 
-    # Здесь можно добавить логику для проверки скриншота
-    # Например, использовать OCR для проверки даты покупки и статуса доставки
+    # Сохраняем второй скриншот (покупку)
+    screenshot = message.photo[-1].file_id
+    chat_id = message.chat.id
+    username = message.from_user.username
+    first_name = message.from_user.first_name
+    last_name = message.from_user.last_name
 
-    # Для простоты сейчас просто принимаем любой скриншот
-    dialog_manager.dialog_data["screenshot_verified"] = True
-    await dialog_manager.switch_to(GiveawayDialog.Participation)
+    #  Достаем объект бота, который мы достали getterom
+    bot: Bot = message.bot
 
+    # Отправляем скриншоты в личный чат для проверки
+    await bot.send_photo(
+        settings.bot.admin_id,
+        screenshot,
+        reply_markup=gift_yes_or_no(),
+        caption=f'{chat_id, username, first_name, last_name}'
+    )
 
-async def on_participate(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
-    """Обработка нажатия на кнопку участия"""
-    session = dialog_manager.middleware_data.get("session")
-    chat_id = callback.from_user.id
+    await dialog_manager.switch_to(state=GiveawayDialog.wait_for_desicion, show_mode=ShowMode.SEND)
 
-    # Проверяем подписку еще раз
-    settings = await get_current_giveaway_settings(session)
-    is_subscribed = await check_user_subscription(callback.bot, chat_id, settings.channel_id)
-
-    if not is_subscribed:
-        await callback.answer("Не вижу вашей подписки. Попробуйте еще раз.")
-        await dialog_manager.switch_to(GiveawayDialog.SubscriptionCheck)
-        return
-
-    # Добавляем участие
-    screenshot_verified = dialog_manager.dialog_data.get(
-        "screenshot_verified", False)
-    participation_number = await add_participation(session, chat_id, screenshot_verified)
-
-    if participation_number:
-        dialog_manager.dialog_data["participation_number"] = participation_number
-        await dialog_manager.switch_to(GiveawayDialog.Participation)
-    else:
-        await callback.answer("Произошла ошибка при регистрации участия. Попробуйте позже.")
-        await dialog_manager.done()

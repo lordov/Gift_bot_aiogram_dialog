@@ -134,9 +134,10 @@ admin_panel = Dialog(
             func=on_set_channel_id,
             content_types=ContentType.TEXT
         ),
-        Back(
+        SwitchTo(
             Const('◀️ Назад'),
             id='back',
+            state=AdminPanel.GiveawaySettings
         ),
         state=AdminPanel.SetChannelId
     )
