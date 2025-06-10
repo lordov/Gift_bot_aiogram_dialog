@@ -3,7 +3,7 @@ from aiogram.fsm.state import State, StatesGroup
 
 class Menu(StatesGroup):
     Start = State()
-    help_rich_cat = State()
+    help = State()
     product_size = State()
     product_60_120 = State()
     product_75_150 = State()
@@ -32,7 +32,6 @@ class GiveawayDialog(StatesGroup):
     ScreenshotUpload = State()
     ScreenshotVerification = State()
     Participation = State()
-    AlreadyParticipated = State()
 
 
 class GiveawayAdminPanel(StatesGroup):

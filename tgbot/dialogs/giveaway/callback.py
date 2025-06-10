@@ -1,12 +1,6 @@
-from datetime import datetime
-from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery, FSInputFile
-from aiogram.filters import Command
-from aiogram_dialog import Dialog, Window, DialogManager
-from aiogram_dialog.widgets.kbd import Button, Row, Cancel
-from aiogram_dialog.widgets.text import Const, Format
-from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.media import DynamicMedia
+from aiogram_dialog import DialogManager
+from aiogram_dialog.widgets.kbd import Button
 
 from tgbot.dialogs.states import GiveawayDialog
 from tgbot.dialogs.getters import get_giveaway_data
@@ -46,6 +40,7 @@ async def on_subscription_check(callback: CallbackQuery, button: Button, dialog_
         await dialog_manager.switch_to(GiveawayDialog.ScreenshotUpload)
     else:
         await callback.answer("Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.")
+        return
 
 
 async def process_screenshot(message: Message, dialog_manager: DialogManager):

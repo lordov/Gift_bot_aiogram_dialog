@@ -6,7 +6,7 @@ from aiogram_dialog.widgets.text import Format, Const
 from aiogram_dialog.widgets.media import StaticMedia
 
 
-from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
+from tgbot.dialogs.states import Menu, GiveawayDialog, AdminPanel, PrizeDraw
 from tgbot.dialogs.getters import username_getter, object_bot
 from tgbot.dialogs.standart.callback import (
     process_review_screenshot, process_verification_screenshot
@@ -15,28 +15,19 @@ from tgbot.dialogs.standart.callback import (
 
 start_dialog = Dialog(
     Window(
-        Format('Привет, {username}!\n\
-На связи команда RichCat. \n\
-Спасибо, что выбрали нас! \n\n\
-Здесь вы можете ознакомиться с нашим ассортиментом, а также принять участие в РОЗЫГРЫШЕ ЗА ОТЗЫВ\n\n\
-Для этого выберите соответствующий пункт\n'),
+        Format('start_greeting'),
         Row(
             Start(
-                text=Const('Наши товары'),
-                id='product',
-                state=Menu.product_size
+                text=Const('Розыгрыш!'),
+                id='prize_draw',
+                state=GiveawayDialog.Start
             ),
-            Start(
-                text=Const('Розыгрыш'),
-                id='gift',
-                state=PrizeDraw.prize_condition
-            )
         ),
         Column(
             Start(
                 text=Const('Задать вопрос'),
                 id='ask_question_gift',
-                state=Menu.help_rich_cat
+                state=Menu.help
             )
         ),
         Column(
@@ -58,7 +49,7 @@ start_dialog = Dialog(
                 id='back',
             ),
         ),
-        state=Menu.help_rich_cat),
+        state=Menu.help),
 )
 
 

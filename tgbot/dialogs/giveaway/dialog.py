@@ -2,7 +2,7 @@ from aiogram.types import ContentType
 from aiogram import F, Router
 from aiogram.filters import Command
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import Button, Row, Cancel
+from aiogram_dialog.widgets.kbd import Button, Row, Cancel, Back
 from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.media import DynamicMedia
@@ -14,48 +14,43 @@ from tgbot.dialogs.getters import get_giveaway_data
 
 giveaway_dialog = Dialog(
     Window(
-        Format("Добро пожаловать в розыгрыш LaKarti!"),
-        DynamicMedia(
-            get_giveaway_data,
-            when=F["giveaway_settings"].image_path
+        Format(
+            "{giveaway_welcome}",
+            when="ready_to_giveaway"
         ),
-        Format("{giveaway_settings.text}"),
         Button(
-            Const("Участвовать"),
+            Format("{giveaway_start}"),
             id="check_subscription",
+            when="ready_to_giveaway",
             on_click=on_subscription_check
         ),
+        Format("{giveaway_already_participated}",
+               when="not_ready_to_giveaway"),
         Cancel(
-            Const("Отмена")
+            Format("{btn_back}")
         ),
         state=GiveawayDialog.Start,
         getter=get_giveaway_data,
     ),
     Window(
-        Const("Пожалуйста, отправьте скриншот с датой покупки из личного кабинета WB или OZON."),
+        Format("{giveaway_screenshot_request}"),
         MessageInput(
             process_screenshot,
             content_types=ContentType.PHOTO
         ),
-        Cancel(Const("Отмена")),
+        Back(
+            Format("{btn_back}")
+        ),
         state=GiveawayDialog.ScreenshotUpload,
+        getter=get_giveaway_data,
     ),
     Window(
-        Format("Спасибо! Ваш номер для участия: {participation_number}"),
-        Format("О дате розыгрыша и результатах будем сообщать в Telegram-канале Lakarti - искусство в твоем доме https://t.me/lakartiphoto. Оставайтесь с нами!"),
-        Button(
-            Const("Закрыть"), id="close",
-            on_click=lambda c, b, dm: dm.done()
+        Format("{giveaway_thanks}"),
+        Format("{giveaway_follow_up}"),
+        Cancel(
+            Format("{btn_back}"),
         ),
         state=GiveawayDialog.Participation,
     ),
-    Window(
-        Const("Вы уже принимали участие в розыгрыше в этом месяце."),
-        Button(
-            Const("Закрыть"),
-            id="close",
-            on_click=lambda c, b, dm: dm.done()
-        ),
-        state=GiveawayDialog.AlreadyParticipated,
-    ),
+    getter=get_giveaway_data
 )
