@@ -7,12 +7,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from datetime import datetime
 
 from tgbot.utils.numbers import generate_participation_number
+from tgbot.config import settings as config
 
 
 db_logger = logging.getLogger('db_logger')
 
 
-async def insert_user_data(session: AsyncSession, chat_id: str, username: str, first_name: str, last_name: str ):
+async def insert_user_data(session: AsyncSession, chat_id: str, username: str, first_name: str, last_name: str):
     try:
         result = await session.execute(select(User).where(User.chat_id == chat_id))
         user = result.scalars().first()
@@ -99,69 +100,44 @@ async def check_monthly_participation(session: AsyncSession, chat_id: int):
     """Проверяет, участвовал ли пользователь в розыгрыше текущего месяца"""
     current_month = datetime.now().month
     current_year = datetime.now().year
-    
+
     try:
-        # Сначала получаем ID пользователя
-        user_result = await session.execute(select(User.id).where(User.chat_id == chat_id))
-        user_id = user_result.scalar_one_or_none()
-        
-        if not user_id:
+        # Получаем пользователя
+        result = await session.execute(select(User).where(User.chat_id == chat_id))
+        user = result.scalar_one_or_none()
+
+        if not user:
             return False
-            
-        # Проверяем участие в текущем месяце
-        result = await session.execute(
-            select(Participation)
-            .where(
-                Participation.user_id == user_id,
-                Participation.month == current_month,
-                Participation.year == current_year
-            )
-        )
-        participation = result.scalar_one_or_none()
-        return bool(participation)
+
+        # Проверяем, есть ли запись об участии в текущем месяце
+        # Здесь мы предполагаем, что поле last_participation_date содержит дату последнего участия
+        if user.last_participation_date:
+            return (user.last_participation_date.month == current_month and
+                    user.last_participation_date.year == current_year)
+        return False
     except SQLAlchemyError as e:
         db_logger.error(f"Error checking monthly participation: {e}")
         return False
 
 
-async def add_participation(session: AsyncSession, chat_id: int, screenshot_verified: bool = False):
+async def add_participation(session: AsyncSession, chat_id: int):
     """Добавляет запись об участии пользователя в розыгрыше текущего месяца"""
-    current_month = datetime.now().month
-    current_year = datetime.now().year
-    
     try:
-        # Получаем ID пользователя
-        user_result = await session.execute(select(User.id).where(User.chat_id == chat_id))
-        user_id = user_result.scalar_one_or_none()
-        
-        if not user_id:
+        # Получаем пользователя
+        result = await session.execute(select(User).where(User.chat_id == chat_id))
+        user = result.scalar_one_or_none()
+
+        if not user:
             return None
-            
+
         # Генерируем уникальный номер участия
         participation_number = generate_participation_number()
-        
-        # Создаем запись об участии
-        new_participation = Participation(
-            user_id=user_id,
-            participation_number=participation_number,
-            month=current_month,
-            year=current_year,
-            screenshot_verified=screenshot_verified
-        )
-        
-        session.add(new_participation)
-        
+
         # Обновляем данные пользователя
-        await session.execute(
-            update(User)
-            .where(User.id == user_id)
-            .values(
-                last_participation_date=datetime.now(),
-                participate=User.participate + 1,
-                number_of_part=participation_number
-            )
-        )
-        
+        user.last_participation_date = datetime.now()
+        user.participate = user.participate + 1
+        user.number_of_part = participation_number
+
         await session.commit()
         return participation_number
     except SQLAlchemyError as e:
@@ -174,7 +150,7 @@ async def get_current_giveaway_settings(session: AsyncSession):
     """Получает настройки текущего розыгрыша"""
     current_month = datetime.now().month
     current_year = datetime.now().year
-    
+
     try:
         result = await session.execute(
             select(GiveawaySettings)
@@ -213,18 +189,106 @@ async def get_all_participants_by_month(session: AsyncSession, month: int = None
         month = datetime.now().month
     if year is None:
         year = datetime.now().year
-        
+
     try:
         result = await session.execute(
-            select(User, Participation)
-            .join(Participation, User.id == Participation.user_id)
+            select(User)
             .where(
-                Participation.month == month,
-                Participation.year == year
+                User.last_participation_date != None,
+                User.last_participation_date.month == month,
+                User.last_participation_date.year == year
             )
         )
-        participants = result.fetchall()
+        participants = result.scalars().all()
         return participants
     except SQLAlchemyError as e:
         db_logger.error(f"Error getting participants: {e}")
+        return []
+
+
+async def create_or_update_giveaway_settings(session: AsyncSession, text: str, image_path: str = None, channel_id: str = None):
+    """Создает или обновляет настройки розыгрыша для текущего месяца"""
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+
+    try:
+        # Проверяем, существуют ли настройки для текущего месяца
+        result = await session.execute(
+            select(GiveawaySettings)
+            .where(
+                GiveawaySettings.month == current_month,
+                GiveawaySettings.year == current_year
+            )
+        )
+        settings = result.scalar_one_or_none()
+
+        if settings:
+            # Обновляем существующие настройки
+            if text:
+                settings.text = text
+            if image_path:
+                settings.image_path = image_path
+            if channel_id:
+                settings.channel_id = channel_id
+            settings.active = True
+        else:
+            # Создаем новые настройки
+            if not channel_id:
+                channel_id = config.bot.channel_id
+
+            settings = GiveawaySettings(
+                month=current_month,
+                year=current_year,
+                text=text,
+                image_path=image_path,
+                channel_id=channel_id,
+                active=True
+            )
+            session.add(settings)
+
+        await session.commit()
+        return settings
+    except SQLAlchemyError as e:
+        db_logger.error(f"Error updating giveaway settings: {e}")
+        await session.rollback()
+        return None
+
+
+async def set_giveaway_image(session: AsyncSession, image_path: str):
+    """Устанавливает изображение для текущего розыгрыша"""
+    current_month = datetime.now().month
+    current_year = datetime.now().year
+
+    try:
+        result = await session.execute(
+            select(GiveawaySettings)
+            .where(
+                GiveawaySettings.month == current_month,
+                GiveawaySettings.year == current_year
+            )
+        )
+        settings = result.scalar_one_or_none()
+
+        if settings:
+            settings.image_path = image_path
+            await session.commit()
+            return True
+        return False
+    except SQLAlchemyError as e:
+        db_logger.error(f"Error setting giveaway image: {e}")
+        await session.rollback()
+        return False
+
+
+async def get_all_giveaway_settings(session: AsyncSession):
+    """Получает все настройки розыгрышей"""
+    try:
+        result = await session.execute(
+            select(GiveawaySettings)
+            .order_by(GiveawaySettings.year.desc(), GiveawaySettings.month.desc())
+        )
+        settings = result.scalars().all()
+        return settings
+    except SQLAlchemyError as e:
+        db_logger.error(f"Error getting all giveaway settings: {e}")
         return []

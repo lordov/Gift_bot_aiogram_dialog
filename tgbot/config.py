@@ -22,6 +22,7 @@ class BotSettings(BaseSettings):
     token: SecretStr
     admin_id: int = 502545728
     username: str
+    channel_id: int = -1002068510571
 
 
 class AppSettings(BaseSettings):

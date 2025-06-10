@@ -15,10 +15,10 @@ from tgbot.dialogs.standart.callback import (
 
 start_dialog = Dialog(
     Window(
-        Format('start_greeting'),
+        Format('{start_greeting}'),
         Row(
             Start(
-                text=Const('Розыгрыш!'),
+                text=Format('{giveaway_start_btn}'),
                 id='prize_draw',
                 state=GiveawayDialog.Start
             ),

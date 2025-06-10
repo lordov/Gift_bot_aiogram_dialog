@@ -6,6 +6,7 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.redis import RedisStorage, DefaultKeyBuilder
 from aiogram.fsm.storage.memory import MemoryStorage
 
+from fluentogram import TranslatorHub
 from redis.asyncio.client import Redis
 from redis.exceptions import ConnectionError
 
@@ -68,8 +69,7 @@ async def setup_bot(dp: Dispatcher):
                        prize_dialog, giveaway_dialog)
     dp.update.outer_middleware(DataBaseSession(
         session_pool=async_session_maker))
-    dp.update.outer_middleware(TranslatorRunnerMiddleware(
-        translator_hub=create_translator_hub()))
+    dp.update.outer_middleware(TranslatorRunnerMiddleware())
     setup_dialogs(dp)
     return bot
 
@@ -77,13 +77,14 @@ async def setup_bot(dp: Dispatcher):
 async def main():
     dp = await setup_dispatcher()
     bot = await setup_bot(dp)
+    translator_hub: TranslatorHub = create_translator_hub()
 
     # Удалить после тестирования
     await create_db()
     await set_commands(bot)
 
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+    await dp.start_polling(bot, _translator_hub=translator_hub)
 
 
 # Запуск бота

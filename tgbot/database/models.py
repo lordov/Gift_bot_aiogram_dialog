@@ -22,8 +22,7 @@ class User(Base):
     participate: Mapped[int] = mapped_column(Integer, default=0)
     number_of_part: Mapped[str] = mapped_column(String(255), nullable=True)
     is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
-    last_participation_date: Mapped[datetime] = mapped_column(
-        DateTime, nullable=True)
+    last_participation_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     is_subscribed: Mapped[bool] = mapped_column(Boolean, default=False)
 
     participations = relationship("Participation", back_populates="user")

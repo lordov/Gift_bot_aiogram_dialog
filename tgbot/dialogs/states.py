@@ -23,6 +23,10 @@ class AdminPanel(StatesGroup):
     Start = State()
     EnterWinner = State()
     Prize = State()
+    GiveawaySettings = State()
+    SetGiveawayText = State()
+    SetGiveawayImage = State()
+    SetChannelId = State()
 
 
 class GiveawayDialog(StatesGroup):
@@ -32,6 +36,7 @@ class GiveawayDialog(StatesGroup):
     ScreenshotUpload = State()
     ScreenshotVerification = State()
     Participation = State()
+    AlreadyParticipated = State()
 
 
 class GiveawayAdminPanel(StatesGroup):
