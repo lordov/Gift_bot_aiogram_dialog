@@ -13,8 +13,7 @@ from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
 from tgbot.dialogs.getters import username_getter, object_bot, get_giveaway_settings
 from tgbot.dialogs.admin.callback import (
     on_export_participants,
-    winner_message,
-    on_settings,
+    # winner_message,
     on_set_giveaway_text,
     on_set_giveaway_image,
     on_set_channel_id
@@ -31,10 +30,10 @@ admin_panel = Dialog(
                     id='start_draw',
                     state=AdminPanel.Prize
                 ),
-                Button(
+                SwitchTo(
                     Const("Настройка розыгрыша"),
                     id="settings",
-                    on_click=on_settings
+                    state=AdminPanel.GiveawaySettings
                 )
 
             ),
@@ -57,7 +56,7 @@ admin_panel = Dialog(
         Const(
             text='Введите id пользователя, которому хотите отправить сообщение о выйгрыше'),
         MessageInput(
-            func=winner_message,
+            func=...,#winner_message,
             content_types=ContentType.TEXT
         ),
         getter=object_bot,

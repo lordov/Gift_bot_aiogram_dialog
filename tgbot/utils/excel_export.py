@@ -16,7 +16,6 @@ async def export_participants_to_excel(participants: list[tuple[User, Participat
             'Last Name': user.last_name,
             'Participation Number': participation.participation_number,
             'Participation Date': participation.participation_date.strftime('%Y-%m-%d %H:%M:%S'),
-            'Total Participations': user.participate,
             'Screenshot Verified': 'Да' if participation.screenshot_verified else 'Нет'
         })
 
@@ -32,4 +31,4 @@ async def export_participants_to_excel(participants: list[tuple[User, Participat
     # Сохраняем в Excel
     df.to_excel(file_path, index=False)
 
-    return file_path
+    return file_path, f"Участники_{current_date}.xlsx"

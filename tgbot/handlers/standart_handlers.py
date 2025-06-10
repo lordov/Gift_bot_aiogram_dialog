@@ -60,7 +60,7 @@ async def process_verification_response(callback: CallbackQuery, state: FSMConte
     caption = callback.message.caption
     chat_id = caption.split(',')[0].strip('()')
     message_id = callback.message.message_id
-    text = f'''Извините, но похоже, вы отправили не те скриншоты. Пожалуйста, отправьте корректные скриншоты.'''
+    text = f'''Извините, но похоже, вы отправили не те скриншоты. Пожалуйста, отправьте корректные скриншоты. /start '''
     await bot.send_message(chat_id=chat_id, text=text, parse_mode='HTML')
     await bot.edit_message_reply_markup(chat_id=settings.bot.admin_id, message_id=message_id, reply_markup=None)
     await callback.message.answer("Данные отклонены.")
