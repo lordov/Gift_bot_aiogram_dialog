@@ -11,6 +11,8 @@ from aiogram_dialog.widgets.media import DynamicMedia
 from tgbot.dialogs.giveaway.callback import on_subscription_check, process_screenshot
 from tgbot.dialogs.states import GiveawayDialog
 from tgbot.dialogs.getters import get_giveaway_data
+from tgbot.filters.subscribe import IsSubscribe
+from tgbot.config import settings
 
 
 giveaway_dialog = Dialog(
@@ -56,3 +58,5 @@ giveaway_dialog = Dialog(
         state=GiveawayDialog.wait_for_desicion,
     ),
 )
+giveaway_dialog.message.filter(IsSubscribe(settings.bot.channel_id))
+giveaway_dialog.callback_query.filter(IsSubscribe(settings.bot.channel_id))

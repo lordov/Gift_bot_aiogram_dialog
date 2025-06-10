@@ -26,7 +26,6 @@ class BotSettings(BaseSettings):
 
 
 class AppSettings(BaseSettings):
-    trial_days: int = 14  # длительность пробного периода в днях
     debug: bool = False
 
     postgres: PostgresSettings

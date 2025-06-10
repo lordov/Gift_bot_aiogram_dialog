@@ -5,7 +5,6 @@ from aiogram_dialog.widgets.text import Format, Const
 from tgbot.dialogs.states import Menu, GiveawayDialog, AdminPanel
 from tgbot.dialogs.getters import username_getter
 
-
 start_dialog = Dialog(
     Window(
         Format('{start_greeting}'),
@@ -16,13 +15,13 @@ start_dialog = Dialog(
                 state=GiveawayDialog.start
             ),
         ),
-        Column(
-            Start(
-                text=Const('Задать вопрос'),
-                id='ask_question_gift',
-                state=Menu.help
-            )
-        ),
+        # Column(
+        #     Start(
+        #         text=Const('Задать вопрос'),
+        #         id='ask_question_gift',
+        #         state=Menu.help
+        #     )
+        # ),
         Column(
             Start(
                 text=Const('Админ панель'),

@@ -9,7 +9,7 @@ from aiogram_dialog.widgets.text import Const, Format
 from aiogram_dialog.widgets.media import DynamicMedia
 
 
-from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
+from tgbot.dialogs.states import AdminPanel
 from tgbot.dialogs.getters import username_getter, object_bot, get_giveaway_settings
 from tgbot.dialogs.admin.callback import (
     on_export_participants,

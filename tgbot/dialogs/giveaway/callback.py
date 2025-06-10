@@ -34,16 +34,12 @@ async def on_subscription_check(callback: CallbackQuery, button: Button, dialog_
         return
 
     # Проверяем подписку
-    is_subscribed = await check_user_subscription(callback.bot, chat_id, settings.channel_id)
+    # is_subscribed = await check_user_subscription(callback.bot, chat_id, settings.channel_id)
 
     # Обновляем статус подписки в БД
-    await update_subscription_status(session, chat_id, is_subscribed)
+    await update_subscription_status(session, chat_id, is_subscribed=True)
 
-    if is_subscribed:
-        await dialog_manager.switch_to(GiveawayDialog.screenshot_upload)
-    else:
-        await callback.answer("Вы не подписаны на канал. Пожалуйста, подпишитесь и попробуйте снова.")
-        return
+    await dialog_manager.switch_to(GiveawayDialog.screenshot_upload)
 
 
 async def process_screenshot(message: Message, button: Button, dialog_manager: DialogManager):
@@ -71,4 +67,3 @@ async def process_screenshot(message: Message, button: Button, dialog_manager: D
     )
 
     await dialog_manager.switch_to(state=GiveawayDialog.wait_for_desicion, show_mode=ShowMode.SEND)
-
