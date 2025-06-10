@@ -13,8 +13,8 @@ from aiogram_dialog import setup_dialogs
 
 # from handlers.standart_handlers import router
 from tgbot.database.engine import create_db
-from tgbot.dialogs.Standart_dialog import start_dialog, prize_dialog
-from tgbot.dialogs.admin_dialog import admin_panel
+from tgbot.dialogs.standart import start_dialog, prize_dialog
+from tgbot.dialogs.admin import admin_panel
 from tgbot.handlers import router_list
 from tgbot.database.engine import async_session_maker
 from tgbot.middlewares.db_session import DataBaseSession

@@ -8,7 +8,7 @@ from aiogram_dialog.widgets.media import StaticMedia
 
 from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
 from tgbot.dialogs.getters import username_getter, object_bot
-from tgbot.dialogs.Standart_dialog.base_callback import (
+from tgbot.dialogs.standart.callback import (
     products_60_120, products_75_150,
     process_review_screenshot, process_verification_screenshot)
 

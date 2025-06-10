@@ -1,4 +1,4 @@
-from .base_menu import (
+from .dialog import (
     start_dialog,
     prize_dialog,
 )

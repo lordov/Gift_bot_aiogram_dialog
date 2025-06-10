@@ -7,7 +7,7 @@ from aiogram_dialog.widgets.text import Const
 
 from tgbot.dialogs.states import Menu, PrizeDraw, AdminPanel
 from tgbot.dialogs.getters import username_getter, object_bot
-from tgbot.dialogs.admin_dialog.admin_callback import winner_message
+from tgbot.dialogs.admin.callback import winner_message
 
 
 admin_panel = Dialog(
