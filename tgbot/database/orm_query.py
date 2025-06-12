@@ -131,7 +131,7 @@ async def add_participation(session: AsyncSession, chat_id: int, screenshot_veri
 
     try:
         # Получаем пользователя
-        result = await session.execute(select(User).where(User.chat_id == chat_id))
+        result = await session.execute(select(User).where(User.chat_id == int(chat_id)))
         user = result.scalar_one_or_none()
 
         if not user:
