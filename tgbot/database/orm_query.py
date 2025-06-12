@@ -246,7 +246,12 @@ async def get_all_participants_by_month(session: AsyncSession, month: int = None
         return []
 
 
-async def create_or_update_giveaway_settings(session: AsyncSession, text: str, image_path: str = None, channel_id: str = None):
+async def create_or_update_giveaway_settings(
+        session: AsyncSession,
+        text: str = None,
+        image_path: str = None,
+        channel_id: str = None
+):
     """Создает или обновляет настройки розыгрыша для текущего месяца"""
     current_month = datetime.now().month
     current_year = datetime.now().year
@@ -281,7 +286,7 @@ async def create_or_update_giveaway_settings(session: AsyncSession, text: str, i
                 year=current_year,
                 text=text,
                 image_path=image_path,
-                channel_id=channel_id,
+                channel_id=str(channel_id),
                 active=True
             )
             session.add(settings)

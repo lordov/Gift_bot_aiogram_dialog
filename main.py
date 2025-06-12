@@ -36,7 +36,7 @@ async def setup_dispatcher():
     Returns:
         Dispatcher: Объект диспетчера aiogram.
     """
-    redis = Redis()
+    redis = Redis.from_url(settings.redis.url)
     try:
         await redis.ping()
         storage = RedisStorage(

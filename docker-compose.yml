@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   bot:
-    build: .
+    image: lordovat/bot_gift:latest
     container_name: bot_gift
     command: [ "python", "main.py" ]
     env_file: .env
@@ -41,7 +41,11 @@ services:
     container_name: redis_gift
     ports:
       - "6379:6379"
+    volumes:
+      - redisdata:/data
+    command: ["redis-server", "--appendonly", "yes"]
     restart: always
 
 volumes:
   pgdata:
+  redisdata:

@@ -88,7 +88,7 @@ async def on_set_giveaway_image(message: Message, button: Button, dialog_manager
     file_id = photo.file_id
 
     # Сохраняем file_id в настройках розыгрыша
-    await set_giveaway_image(session, file_id)
+    await create_or_update_giveaway_settings(session, image_path=file_id)
 
     await message.answer("Изображение для розыгрыша успешно обновлено.")
     await dialog_manager.switch_to(AdminPanel.GiveawaySettings)

@@ -78,7 +78,7 @@ async def get_giveaway_settings(dialog_manager: DialogManager, **kwargs):
     settings = await get_current_giveaway_settings(session)
 
     if settings:
-        current_text = settings.text
+        current_text = settings.text or "Текст не задан"
         current_channel_id = settings.channel_id
         current_image_path = settings.image_path
     else:

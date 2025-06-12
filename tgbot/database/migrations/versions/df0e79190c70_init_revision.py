@@ -25,7 +25,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('month', sa.Integer(), nullable=False),
     sa.Column('year', sa.Integer(), nullable=False),
-    sa.Column('text', sa.Text(), nullable=False),
+    sa.Column('text', sa.Text(), nullable=True),
     sa.Column('image_path', sa.String(length=255), nullable=True),
     sa.Column('channel_id', sa.String(length=255), nullable=False),
     sa.Column('active', sa.Boolean(), nullable=False),
