@@ -16,10 +16,12 @@ async def username_getter(
         **kwargs):
     session = kwargs.get('session')
     is_admin = await check_admin(session, event_from_user.id)
+    # Используем username, если он есть, иначе используем first_name или "друг"
+    display_name = event_from_user.username or event_from_user.first_name or "друг"
     return {
-        'username': event_from_user.username,
+        'username': display_name,
         'is_admin': is_admin,
-        'start_greeting': i18n.get('start-greeting', username=event_from_user.username),
+        'start_greeting': i18n.get('start-greeting', username=display_name),
         "giveaway_start_btn": i18n.get('giveaway-start-btn')
     }
 

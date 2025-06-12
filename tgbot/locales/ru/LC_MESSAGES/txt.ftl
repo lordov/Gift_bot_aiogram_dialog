@@ -67,4 +67,4 @@ giveaway-start = Участвовать
 giveaway-screenshot-request = Пожалуйста, отправьте скриншот с датой покупки из личного кабинета WB или OZON.
 giveaway-thanks = Спасибо! Ваш номер для участия: participation_number
 giveaway-follow-up = О дате розыгрыша и результатах будем сообщать в Telegram-канале Lakarti - искусство в твоем доме https://t.me/lakartiphoto. Оставайтесь с нами!
-giveaway-already-participated = Вы уже принимали участие в розыгрыше в этом месяце.
+giveaway-already-participated = Вы уже принимали участие в Розыгрыше в этом месяце. Попробуйте попытать удачу в следующем)

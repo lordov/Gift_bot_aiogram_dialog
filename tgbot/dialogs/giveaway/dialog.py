@@ -53,12 +53,12 @@ giveaway_dialog = Dialog(
     ),
     Window(
         Const('Скриншоты успешно отправлены на проверку. Ожидайте результатов.'),
-        Column(
-            Cancel(
-                Const('◀️ Вернуться на главную'),
-                id='cancel_after_screenshots',
-            ),
-        ),
+        # Column(
+        #     Cancel(
+        #         Const('◀️ Вернуться на главную'),
+        #         id='cancel_after_screenshots',
+        #     ),
+        # ),
         state=GiveawayDialog.wait_for_desicion,
     ),
 )
