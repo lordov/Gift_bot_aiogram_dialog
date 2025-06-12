@@ -10,10 +10,9 @@ from aiogram_dialog.widgets.media import DynamicMedia
 
 
 from tgbot.dialogs.states import AdminPanel
-from tgbot.dialogs.getters import username_getter, object_bot, get_giveaway_settings
+from tgbot.dialogs.getters import object_bot, get_giveaway_settings
 from tgbot.dialogs.admin.callback import (
     on_export_participants,
-    # winner_message,
     on_set_giveaway_text,
     on_set_giveaway_image,
     on_set_channel_id

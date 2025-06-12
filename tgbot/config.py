@@ -20,7 +20,7 @@ class RedisSettings(BaseSettings):
 
 class BotSettings(BaseSettings):
     token: SecretStr
-    admin_id: int = 502545728
+    admin_id: int = 1746665613
     username: str
     channel_id: int = -1002794141005
 

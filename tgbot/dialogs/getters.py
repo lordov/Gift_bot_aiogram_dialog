@@ -39,13 +39,29 @@ async def get_giveaway_data(
 
     # Проверяем участие в текущем месяце
     already_been = await check_monthly_participation(session, chat_id)
+    settings = await get_current_giveaway_settings(session)
+
+    if settings:
+        current_text = settings.text
+        current_image_path = settings.image_path
+    else:
+        current_text = i18n.get('giveaway-welcome')
+        current_image_path = None
+
+    if current_image_path:
+        photo = MediaAttachment(
+            type=ContentType.PHOTO,
+            file_id=MediaId(current_image_path))
+    else:
+        photo = None
 
     return {
         "ready_to_giveaway": not already_been,
         "giveaway_thanks": i18n.get('giveaway-thanks'),
         "not_ready_to_giveaway": already_been,
         "giveaway_already_participated": i18n.get('giveaway-already-participated'),
-        "giveaway_welcome": i18n.get('giveaway-welcome'),
+        "giveaway_welcome": current_text,
+        "photo": photo,
         "giveaway_start": i18n.get('giveaway-start'),
         "btn_back": i18n.get('btn-back'),
         "giveaway_screenshot_request": i18n.get('giveaway-screenshot-request'),

@@ -12,7 +12,6 @@ from redis.exceptions import ConnectionError
 
 from aiogram_dialog import setup_dialogs
 
-from tgbot.database.engine import create_db
 from tgbot.dialogs.standart import start_dialog
 from tgbot.dialogs.admin import admin_panel
 from tgbot.dialogs.giveaway import giveaway_dialog
@@ -77,9 +76,6 @@ async def main():
     dp = await setup_dispatcher()
     bot = await setup_bot(dp)
     translator_hub: TranslatorHub = create_translator_hub()
-
-    # Удалить после тестирования
-    await create_db()
     await set_commands(bot)
 
     await bot.delete_webhook(drop_pending_updates=True)

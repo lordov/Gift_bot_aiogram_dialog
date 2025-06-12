@@ -17,6 +17,10 @@ from tgbot.config import settings
 
 giveaway_dialog = Dialog(
     Window(
+        DynamicMedia(
+            selector="photo",
+            when="photo",
+        ),
         Format(
             "{giveaway_welcome}",
             when="ready_to_giveaway"

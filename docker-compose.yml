@@ -11,17 +11,17 @@ services:
       - redis
     restart: always
 
-  # migrate:
-  #   build: .
-  #   container_name: migrate_gift
-  #   command: [ "alembic", "upgrade", "head" ]
-  #   env_file: .env
-  #   volumes:
-  #     - .:/app
-  #   working_dir: /app
-  #   depends_on:
-  #     - db
-  #   restart: "no" # однократный запуск
+  migrate:
+    build: .
+    container_name: migrate_gift
+    command: [ "alembic", "upgrade", "head" ]
+    env_file: .env
+    volumes:
+      - .:/app
+    working_dir: /app
+    depends_on:
+      - db
+    restart: "no" # однократный запуск
 
   db:
     image: postgres:latest
