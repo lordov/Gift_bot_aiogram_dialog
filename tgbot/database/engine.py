@@ -14,7 +14,7 @@ class Base(DeclarativeBase):
     created: Mapped[DateTime] = mapped_column(
         DateTime(), default=datetime.now())
     updated: Mapped[DateTime] = mapped_column(
-        DateTime(), default=datetime.now(), onupdate=datetime.now())
+        DateTime(), default=datetime.now, onupdate=datetime.now)
 
 
 engine = create_async_engine(settings.postgres.async_url, echo=True)

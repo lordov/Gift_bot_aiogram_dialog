@@ -8,11 +8,12 @@ from tgbot.dialogs.states import AdminPanel
 from tgbot.database.orm_query import (
     check_is_winner,
     get_all_participants_by_month,
+    get_all_users,
     get_current_giveaway_settings,
     create_or_update_giveaway_settings,
     set_giveaway_image
 )
-from tgbot.utils.excel_export import export_participants_to_excel
+from tgbot.utils.excel_export import export_participants_to_excel, export_users_to_excel
 
 
 # async def winner_message(message: Message, button: Button, dialog_manager: DialogManager):
@@ -56,6 +57,21 @@ async def on_export_participants(callback: CallbackQuery, button: Button, dialog
     await callback.message.answer_document(
         FSInputFile(file_path, filename=file_name),
         caption="Список участников розыгрыша"
+    )
+    await dialog_manager.switch_to(AdminPanel.GiveawaySettings)
+
+async def on_export_users(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
+    """Экспорт пользователей в Excel"""
+    session = dialog_manager.middleware_data.get("session")
+    users = await get_all_users(session)
+    if not users:
+        await callback.answer("Нет пользователей для экспорта.")
+        return
+    
+    file_path, file_name = await export_users_to_excel(users)
+    await callback.message.answer_document(
+        FSInputFile(file_path, filename=file_name),
+        caption="Список пользователей"
     )
     await dialog_manager.switch_to(AdminPanel.GiveawaySettings)
 

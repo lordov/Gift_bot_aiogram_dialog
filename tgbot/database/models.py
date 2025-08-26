@@ -1,5 +1,5 @@
 from sqlalchemy import (
-    Integer, String, Boolean, 
+    Integer, String, Boolean, BigInteger,
     DateTime, ForeignKey, Text, UniqueConstraint
 )
 
@@ -16,7 +16,7 @@ class User(Base):
     __tablename__ = "users"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    chat_id: Mapped[int] = mapped_column(Integer)
+    chat_id: Mapped[int] = mapped_column(BigInteger)
     username: Mapped[str] = mapped_column(String(255), nullable=True)
     first_name: Mapped[str] = mapped_column(String(255), nullable=True)
     last_name: Mapped[str] = mapped_column(String(255), nullable=True)

@@ -15,7 +15,8 @@ from tgbot.dialogs.admin.callback import (
     on_export_participants,
     on_set_giveaway_text,
     on_set_giveaway_image,
-    on_set_channel_id
+    on_set_channel_id,
+    on_export_users
 )
 
 
@@ -41,6 +42,13 @@ admin_panel = Dialog(
                     Const("Экспорт участников"),
                     id="export",
                     on_click=on_export_participants),
+            ),
+            Column(
+                Button(
+                    Const("Экспорт пользователей"),
+                    id="export_users",
+                    on_click=on_export_users
+                )
             )
         ),
         Column(

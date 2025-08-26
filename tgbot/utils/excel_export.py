@@ -32,3 +32,26 @@ async def export_participants_to_excel(participants: list[tuple[User, Participat
     df.to_excel(file_path, index=False)
 
     return file_path, f"Участники_{current_date}.xlsx"
+
+
+async def export_users_to_excel(users: list[User]):
+    """Экспортирует данные пользователей в Excel-файл"""
+    # Создаем DataFrame из данных пользователей
+    data = []
+    for user in users:
+        data.append({
+            'ID': user.id,
+            'Username': user.username,
+            'First Name': user.first_name,
+            'Last Name': user.last_name,})
+    
+    df = pd.DataFrame(data)
+
+    os.makedirs('reports', exist_ok=True)
+    current_date = datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
+    file_path = f'reports/users_{current_date}.xlsx'
+
+    df.to_excel(file_path, index=False)
+
+    return file_path, f"Пользователи_{current_date}.xlsx"
+
