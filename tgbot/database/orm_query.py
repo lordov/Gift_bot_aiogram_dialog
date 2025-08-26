@@ -85,11 +85,11 @@ async def check_is_winner(session: AsyncSession, chat_id: str):
         return False
 
 
-async def get_all_users(session: AsyncSession):
+async def get_all_users(session: AsyncSession) -> list[User]:
     try:
-        result = await session.execute(select(User.chat_id).where(User.is_admin == 0))
-        users = result.fetchall()
-        return users[0]
+        result = await session.execute(select(User).where(User.is_admin == False))
+        users = result.scalars().all()
+        return users
     except SQLAlchemyError as e:
         db_logger.error(f"Error getting all users: {e}")
         return []
