@@ -10,6 +10,8 @@ services:
       - db
       - redis
     restart: always
+    volumes:
+      - ./logs:/app/logs
 
   migrate:
     build: .

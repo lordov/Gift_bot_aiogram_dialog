@@ -44,7 +44,7 @@ def configure_logging():
 
     """
     # Создаем папку "Logs" в текущей директории, если она не существует
-    logs_dir = os.path.join(os.getcwd(), 'Logs')
+    logs_dir = os.path.join(os.getcwd(), 'logs')
     if not os.path.exists(logs_dir):
         os.makedirs(logs_dir)
 
