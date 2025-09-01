@@ -67,7 +67,7 @@ def configure_logging():
             'file_handler': {
                 'class': 'logging.handlers.RotatingFileHandler',
                 'formatter': 'simple_formatter',
-                'filename': './Logs/app.log',
+                'filename': './logs/app.log',
                 'maxBytes': 1024 * 1024 * 10,
                 'backupCount': 3,
                 'encoding': 'utf-8',
@@ -79,7 +79,7 @@ def configure_logging():
             'file_debug_handler': {
                 'class': 'logging.handlers.RotatingFileHandler',
                 'formatter': 'formatter_for_debug',
-                'filename': './Logs/debug.log',
+                'filename': './logs/debug.log',
                 'maxBytes': 1024 * 1024 * 10,
                 'backupCount': 3,
                 'level': 'DEBUG',
@@ -88,7 +88,7 @@ def configure_logging():
             'db_handler': {
                 'class': 'logging.handlers.RotatingFileHandler',
                 'formatter': 'simple_formatter',
-                'filename': './Logs/DB.log',
+                'filename': './logs/DB.log',
                 'maxBytes': 1024 * 1024 * 10,
                 'backupCount': 3,
                 'level': 'ERROR',
