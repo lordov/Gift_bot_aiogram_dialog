@@ -44,7 +44,7 @@ async def update_participation_number(session: AsyncSession, chat_id: str):
 
 async def get_participation_value(session: AsyncSession, chat_id: str):
     try:
-        result = await session.execute(select(User.participate).where(User.chat_id == chat_id))
+        result = await session.execute(select(User.participations).where(User.chat_id == chat_id))
         participation_value = result.scalars().first()
         return participation_value if participation_value else 0
     except SQLAlchemyError as e:

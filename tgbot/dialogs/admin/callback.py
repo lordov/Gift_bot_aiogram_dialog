@@ -16,27 +16,26 @@ from tgbot.database.orm_query import (
 from tgbot.utils.excel_export import export_participants_to_excel, export_users_to_excel
 
 
-# async def winner_message(message: Message, button: Button, dialog_manager: DialogManager):
-#     winner_id = message.text
-#     winner = await check_is_winner(winner_id)
-#     if not winner:
-#         await message.answer(
-#             f'Пользователь с {winner_id} не ялвяется участником конкурса')
-#         await dialog_manager.switch_to(state=AdminPanel.Start)
-#         return
-#     #  Достаем объект бота, который мы достали getterom
-#     bot: Bot = dialog_manager.dialog_data.get('bot')
+async def winner_message(message: Message, button: Button, dialog_manager: DialogManager):
+    session = dialog_manager.middleware_data.get("session")
+    winner_id = message.text
+    winner = await check_is_winner(session, int(winner_id))
+    if not winner:
+        await message.answer(
+            f'Пользователь с {winner_id} не ялвяется участником конкурса')
+        await dialog_manager.switch_to(state=AdminPanel.Start)
+        return
+    #  Достаем объект бота, который мы достали getterom
+    bot: Bot = dialog_manager.dialog_data.get('bot')
+    i18n = dialog_manager.middleware_data.get("i18n")
+    try:
+        await bot.send_message(winner_id, text=i18n.get('winner-message'))
+    except TelegramForbiddenError:
+        await message.answer('Пользователь заблокировал бота')
+        await dialog_manager.switch_to(state=AdminPanel.Start)
 
-#     try:
-#         await bot.send_message(winner_id, text='Добрый день! Поздравляем Вас с Победой в нашем розыгрыше!\n\
-# Cвяжитесь с нами и выберем коврик и адрес отправки.\n\
-# https://t.me/Lakarti_sales')
-#     except TelegramForbiddenError as err:
-#         await message.answer('Пользователь заблокировал бота')
-#         await dialog_manager.switch_to(state=AdminPanel.Start)
-
-#     await message.reply('Пользователь получил сообщение.')
-#     await dialog_manager.switch_to(state=AdminPanel.Start)
+    await message.reply('Пользователь получил сообщение.')
+    await dialog_manager.switch_to(state=AdminPanel.Start)
 
 
 async def on_export_participants(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):

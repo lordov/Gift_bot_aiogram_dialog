@@ -16,7 +16,8 @@ from tgbot.dialogs.admin.callback import (
     on_set_giveaway_text,
     on_set_giveaway_image,
     on_set_channel_id,
-    on_export_users
+    on_export_users,
+    winner_message
 )
 
 
@@ -63,7 +64,7 @@ admin_panel = Dialog(
         Const(
             text='Введите id пользователя, которому хотите отправить сообщение о выйгрыше'),
         MessageInput(
-            func=...,#winner_message,
+            func=winner_message,#winner_message,
             content_types=ContentType.TEXT
         ),
         getter=object_bot,
