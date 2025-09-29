@@ -25,12 +25,6 @@ async def username_getter(
         "giveaway_start_btn": i18n.get('giveaway-start-btn')
     }
 
-
-async def object_bot(dialog_manager: DialogManager, event_from_user: User, **kwargs):
-    dialog_manager.dialog_data.update(bot=event_from_user.bot)
-    return {'bot': event_from_user.bot}
-
-
 async def get_giveaway_data(
         dialog_manager: DialogManager,
         i18n: TranslatorRunner,

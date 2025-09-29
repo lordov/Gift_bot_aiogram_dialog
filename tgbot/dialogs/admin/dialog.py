@@ -10,7 +10,7 @@ from aiogram_dialog.widgets.media import DynamicMedia
 
 
 from tgbot.dialogs.states import AdminPanel
-from tgbot.dialogs.getters import object_bot, get_giveaway_settings
+from tgbot.dialogs.getters import get_giveaway_settings
 from tgbot.dialogs.admin.callback import (
     on_export_participants,
     on_set_giveaway_text,
@@ -67,7 +67,6 @@ admin_panel = Dialog(
             func=winner_message,
             content_types=ContentType.TEXT
         ),
-        getter=object_bot,
         state=AdminPanel.Prize
     ),
     Window(

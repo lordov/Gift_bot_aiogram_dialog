@@ -16,8 +16,7 @@ from tgbot.utils.excel_export import export_participants_to_excel, export_users_
 
 async def winner_message(message: Message, button: Button, dialog_manager: DialogManager):
     session = dialog_manager.middleware_data.get("session")
-    isinstance(message.text, int)
-    if not isinstance(message.text, int):
+    if not message.text.isdigit():
         await message.answer('Пожалуйста, введите число')
         return
     winner_id = message.text
@@ -28,7 +27,7 @@ async def winner_message(message: Message, button: Button, dialog_manager: Dialo
         await dialog_manager.switch_to(state=AdminPanel.Start)
         return
 
-    bot: Bot = dialog_manager.dialog_data.get('bot')
+    bot: Bot = message.bot
     i18n = dialog_manager.middleware_data.get("i18n")
     try:
         await bot.send_message(winner_id, text=i18n.get('winner-message'))
