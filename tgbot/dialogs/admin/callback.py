@@ -9,9 +9,7 @@ from tgbot.database.orm_query import (
     check_is_winner,
     get_all_participants_by_month,
     get_all_users,
-    get_current_giveaway_settings,
     create_or_update_giveaway_settings,
-    set_giveaway_image
 )
 from tgbot.utils.excel_export import export_participants_to_excel, export_users_to_excel
 
@@ -25,7 +23,7 @@ async def winner_message(message: Message, button: Button, dialog_manager: Dialo
             f'Пользователь с {winner_id} не ялвяется участником конкурса')
         await dialog_manager.switch_to(state=AdminPanel.Start)
         return
-    #  Достаем объект бота, который мы достали getterom
+
     bot: Bot = dialog_manager.dialog_data.get('bot')
     i18n = dialog_manager.middleware_data.get("i18n")
     try:
