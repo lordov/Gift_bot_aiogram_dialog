@@ -2,7 +2,7 @@ from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram import Bot
 from aiogram.exceptions import TelegramForbiddenError
 from aiogram_dialog.widgets.kbd import Button
-from aiogram_dialog import DialogManager
+from aiogram_dialog import DialogManager, ShowMode
 
 from tgbot.dialogs.states import AdminPanel
 from tgbot.database.orm_query import (
@@ -16,6 +16,10 @@ from tgbot.utils.excel_export import export_participants_to_excel, export_users_
 
 async def winner_message(message: Message, button: Button, dialog_manager: DialogManager):
     session = dialog_manager.middleware_data.get("session")
+    isinstance(message.text, int)
+    if not isinstance(message.text, int):
+        await message.answer('Пожалуйста, введите число')
+        return
     winner_id = message.text
     winner = await check_is_winner(session, int(winner_id))
     if not winner:
@@ -57,6 +61,7 @@ async def on_export_participants(callback: CallbackQuery, button: Button, dialog
     )
     await dialog_manager.switch_to(AdminPanel.GiveawaySettings)
 
+
 async def on_export_users(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
     """Экспорт пользователей в Excel"""
     session = dialog_manager.middleware_data.get("session")
@@ -64,7 +69,7 @@ async def on_export_users(callback: CallbackQuery, button: Button, dialog_manage
     if not users:
         await callback.answer("Нет пользователей для экспорта.")
         return
-    
+
     file_path, file_name = await export_users_to_excel(users)
     await callback.message.answer_document(
         FSInputFile(file_path, filename=file_name),

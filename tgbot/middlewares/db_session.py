@@ -36,6 +36,8 @@ class DataBaseSession(BaseMiddleware):
                 await asyncio.sleep(2)
             except SQLAlchemyError as e:
                 db_logger.error(f'Ошибка SqlAlchemy: {e}')
+            except Exception as e:
+                db_logger.error(f'Ошибка: {e}')
 
         db_logger.error(f"Failed after {retries} retries.")
         return None  # Или возбудить исключение, если нужно
