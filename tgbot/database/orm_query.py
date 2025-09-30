@@ -62,11 +62,11 @@ async def check_admin(session: AsyncSession, chat_id: str):
         return False
 
 
-async def check_is_winner(session: AsyncSession, chat_id: str):
+async def check_is_winner(session: AsyncSession, id: int):
     """Проверяет, является ли пользователь победителем розыгрыша"""
     try:
         # Получаем пользователя
-        user_result = await session.execute(select(User).where(User.chat_id == chat_id))
+        user_result = await session.execute(select(User).where(User.id == id))
         user = user_result.scalar_one_or_none()
 
         if not user:
@@ -365,4 +365,15 @@ async def get_participation_number(session: AsyncSession, chat_id: int):
         return participation_number
     except SQLAlchemyError as e:
         db_logger.error(f"Error getting participation number: {e}")
+        return None
+
+
+async def get_user_id(session: AsyncSession, id: int):
+    """Получает ID пользователя"""
+    try:
+        result = await session.execute(select(User.chat_id).where(User.id == id))
+        user_id = result.scalar_one_or_none()
+        return user_id
+    except SQLAlchemyError as e:
+        db_logger.error(f"Error getting user id: {e}")
         return None

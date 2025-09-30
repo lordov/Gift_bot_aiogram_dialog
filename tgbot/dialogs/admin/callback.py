@@ -10,6 +10,7 @@ from tgbot.database.orm_query import (
     get_all_participants_by_month,
     get_all_users,
     create_or_update_giveaway_settings,
+    get_user_id,
 )
 from tgbot.utils.excel_export import export_participants_to_excel, export_users_to_excel
 
@@ -19,8 +20,8 @@ async def winner_message(message: Message, button: Button, dialog_manager: Dialo
     if not message.text.isdigit():
         await message.answer('Пожалуйста, введите число')
         return
-    winner_id = message.text
-    winner = await check_is_winner(session, int(winner_id))
+    winner = await check_is_winner(session, int(message.text))
+    winner_id = await get_user_id(session, int(message.text))
     if not winner:
         await message.answer(
             f'Пользователь с {winner_id} не ялвяется участником конкурса')
@@ -58,7 +59,7 @@ async def on_export_participants(callback: CallbackQuery, button: Button, dialog
         FSInputFile(file_path, filename=file_name),
         caption="Список участников розыгрыша"
     )
-    await dialog_manager.switch_to(AdminPanel.GiveawaySettings)
+    await dialog_manager.switch_to(AdminPanel.Start)
 
 
 async def on_export_users(callback: CallbackQuery, button: Button, dialog_manager: DialogManager):
@@ -74,7 +75,7 @@ async def on_export_users(callback: CallbackQuery, button: Button, dialog_manage
         FSInputFile(file_path, filename=file_name),
         caption="Список пользователей"
     )
-    await dialog_manager.switch_to(AdminPanel.GiveawaySettings)
+    await dialog_manager.switch_to(AdminPanel.Start)
 
 
 async def on_set_giveaway_text(message: Message, button: Button, dialog_manager: DialogManager):
